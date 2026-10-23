@@ -1,0 +1,3475 @@
+=== PROJECT DUMP ===
+Fri Oct 23 03:07:01 +00 2026
+
+--- FILE STRUCTURE ---
+./.gitignore
+./AGENTS.md
+./CHECKLIST.md
+./README.md
+./compress.mjs
+./eslint.config.mjs
+./next-env.d.ts
+./next.config.ts
+./package.json
+./postcss.config.mjs
+./public/_headers
+./public/fleet/clio5.webp
+./public/fleet/duster.webp
+./public/fleet/golf8.webp
+./public/fleet/jogger.webp
+./public/fleet/logan.webp
+./public/fleet/sandero.webp
+./public/hero.webp
+./public/logo.png
+./public/meeting-point.webp
+./public/og-hero.jpg
+./src/app/[slug]/page.tsx
+./src/app/error.tsx
+./src/app/globals.css
+./src/app/layout.tsx
+./src/app/not-found.tsx
+./src/app/page.tsx
+./src/app/robots.ts
+./src/app/sitemap.ts
+./src/components/AirportMeeting.tsx
+./src/components/conditions.tsx
+./src/components/faq.tsx
+./src/components/fleet.tsx
+./src/components/footer.tsx
+./src/components/header.tsx
+./src/components/hero.tsx
+./src/components/how-it-works.tsx
+./src/components/lang-switcher.tsx
+./src/components/meeting-image.tsx
+./src/components/reviews.tsx
+./src/components/shell.tsx
+./src/components/t.tsx
+./src/components/trust-strip.tsx
+./src/components/wa-cta.tsx
+./src/components/whatsapp-bar.tsx
+./src/context/BookingContext.tsx
+./src/data/config.ts
+./src/data/guard.ts
+./src/data/landings.ts
+./src/data/translations.ts
+./src/lib/currency.ts
+./src/lib/dates.ts
+./src/lib/i18n.ts
+./src/lib/lang.ts
+./src/lib/whatsapp.ts
+./tsconfig.json
+
+
+====== FILE: ./.gitignore ======
+
+# See https://help.github.com/articles/ignoring-files/ for more about ignoring files.
+
+# dependencies
+/node_modules
+/.pnp
+.pnp.*
+.yarn/*
+!.yarn/patches
+!.yarn/plugins
+!.yarn/releases
+!.yarn/versions
+
+# testing
+/coverage
+
+# next.js
+/.next/
+/out/
+
+# production
+/build
+
+# misc
+.DS_Store
+*.pem
+
+# debug
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+.pnpm-debug.log*
+
+# env files (can opt-in for committing if needed)
+.env*
+
+# vercel
+.vercel
+
+# typescript
+*.tsbuildinfo
+next-env.d.ts
+.wrangler
+
+
+====== FILE: ./AGENTS.md ======
+
+<!-- BEGIN:nextjs-agent-rules -->
+
+## This is NOT the Next.js you know
+
+This version has breaking changes — APIs, conventions, and file structure may all differ from your training data. Read the relevant guide in `node_modules/next/dist/docs/` (resolved from this file's directory; in monorepos the `next` package may not be visible from the repo root) before writing any code. Heed deprecation notices.
+
+This block is written and re-added by `next dev` — verify at `node_modules/next/dist/server/lib/generate-agent-files.js`. Removing it from a diff only re-creates the uncommitted change; committing it with your work keeps the tree clean.
+
+<!-- END:nextjs-agent-rules -->
+
+====== FILE: ./CHECKLIST.md ======
+
+# Checklist de Deploiement Client (Next.js Static + Cloudflare Pages)
+
+Ce guide recapitule toutes les etapes necessaires pour configurer et deployer un nouveau client a partir de ce template.
+
+---
+
+## 1. Initialisation du projet client
+- [ ] Cliquer sur **Use this template** sur GitHub pour creer le depot du client (ex: nom-agence-site).
+- [ ] Cloner le projet en local dans WSL : git clone url-du-repo.
+- [ ] Installer les dependances : npm install (ou npm ci).
+
+---
+
+## 2. Configuration Metier (src/data/config.ts)
+
+### A. Statut Aeroport & Localisation
+- [ ] CITY_HAS_AIRPORT : true uniquement si la ville possede son propre aeroport. Si false (ex: Jadida, Meknes), aucun texte ne dit « Aeroport {ville} » (badge, titre, SEO, pied de page, URL).
+- [ ] AIRPORT_SERVICE : true si l'agence propose la livraison / un rendez-vous a l'aeroport.
+- [ ] seo.city et seo.cityAr : nom de la ville principale (ex: Agadir / أكادير).
+- [ ] seo.region : region administrative (ex: Souss-Massa).
+- [ ] seo.areas et seo.areasAr : zones couvertes en respectant la parite exacte (ex: Taghazout, Aourir).
+- [ ] Si CITY_HAS_AIRPORT = true : renseigner obligatoirement seo.airport, seo.airportAr, seo.airportCode, seo.meetingPoint, seo.meetingPointAr.
+- [ ] Si CITY_HAS_AIRPORT = false et AIRPORT_SERVICE = true : renseigner obligatoirement la liste seo.deliveryAirports avec noms (FR/AR) et codes IATA reels (ex: CMN, RAK, AGA).
+
+### B. Informations de Marque & Contact
+- [ ] brand.name + brand.nameLight : separer le nom principal et son extension stylisee.
+- [ ] website.url : URL definitive du client avec HTTPS (ex: https://nomagence.ma).
+- [ ] website.contentUpdated : date du jour au format YYYY-MM-DD.
+- [ ] contact.whatsapp : format international sans + (ex: 2126XXXXXXXX).
+- [ ] contact.phone : format international avec + (ex: +2126XXXXXXXX).
+- [ ] contact.phoneDisplay : format lisible avec espaces (doit correspondre exactement aux chiffres de phone).
+- [ ] contact.address : adresse physique reelle.
+- [ ] contact.geo : latitude et longitude GPS reelles (ne pas laisser a 0,0).
+- [ ] contact.googleMapsLink : lien Maps HTTPS valide vers l'agence ou le point de rencontre.
+- [ ] contact.sameAs : liens vers les reseaux sociaux reels du client (ou tableau vide []).
+
+### C. Regles de Reservation & Flotte
+- [ ] booking.withCaution : false pour "Sans caution", true avec caution.
+- [ ] booking.advancePaymentDh : montant d'acompte en DH, ou null si aucun acompte.
+- [ ] booking.freeCancellation, unlimitedKm, freeAirportDelivery, freeCityDelivery, insuranceIncluded.
+- [ ] business.openingHours : format strict HH:MM-HH:MM (ex: 08:00-22:00).
+- [ ] business.payments : modes de paiement acceptes (cash, transfer, card).
+- [ ] fleet.cars : liste complete des vehicules, prix journaliers reels, nombre de places et type de boite/carburant.
+
+### D. Avis Clients (reviews)
+- [ ] Ajouter les avis reels du client avec langues respectives (fr, ar, en), ou laisser items: [] pour masquer le composant.
+
+---
+
+## 3. Preparation des Images (public/)
+- [ ] public/logo.png : logo officiel de l'agence.
+- [ ] Placer hero.jpg dans public/ et lancer npm run images pour generer hero.webp et og-hero.jpg.
+- [ ] Placer les photos des voitures dans public/fleet/ (format .jpg ou .png) et lancer npm run images pour creer les .webp.
+- [ ] Si AIRPORT_SERVICE = true : placer meeting-point.jpg dans public/ puis executer npm run images.
+
+---
+
+## 4. Levee du Build Guard (Production Readiness)
+Une fois toutes les etapes ci-dessus verifiees minutieusement :
+- [ ] verified.businessInfo = true
+- [ ] verified.legalClaims = true
+- [ ] verified.fleet = true
+- [ ] verified.seo = true
+
+---
+
+## 5. Audit & Deploiement Cloudflare Pages
+- [ ] Lancer la verification TypeScript et Lint : npm run lint.
+- [ ] Compiler la version finale : npm run build (doit reussir sans erreur de guard).
+- [ ] Deployer sur Cloudflare Pages sur la branche de production :
+  npx wrangler pages deploy out --project-name=nom-client --branch=main
+- [ ] Verifier sur le domaine de production :
+  - L'affichage sans flash des langues (FR / AR / EN).
+  - L'ouverture du message WhatsApp pre-rempli depuis un telephone mobile.
+  - Le fichier https://nom-client.pages.dev/robots.txt (doit autoriser l'indexation en production).
+  - Le fichier https://nom-client.pages.dev/sitemap.xml.
+
+====== FILE: ./README.md ======
+
+# Car Rental Template - Static White Label (Next.js 16 + Cloudflare Pages)
+
+Template Next.js 16 ultra-performant, mobile-first et optimise pour la conversion WhatsApp directe, specialement concu pour les agences de location de voitures au Maroc.
+
+Entierement statique (output: 'export'), il est taille pour un hebergement gratuit, securise et instantane sur Cloudflare Pages.
+
+---
+
+## Points Forts
+
+- WhatsApp-First Conversion : Formulaire de reservation interactif calculant automatiquement la duree, le prix total en MAD/EUR, et generant un message WhatsApp structure.
+- Support Trilingue & RTL Natif : Francais, Anglais et Arabe avec inversion de direction (dir="rtl") sans rechargement de page.
+- Hebergement 100% Statique : Zero cout d'infrastructure serveur, resistant aux pics de trafic grace au CDN mondial de Cloudflare.
+- Cache Optimise : En-tetes _headers preconfigures pour un cache immuable d'un an sur tous les bundles Next.js.
+- Build Guard Integre : Systeme de securite interdisant le deploiement en production si des donnees demo persistent.
+- SEO & Landing Pages Statiques : Generation automatique de pages dediees (/[slug]) par aeroport (si la ville en a un) ou par livraison aeroport (vers les aeroports de livraison deliveryAirports si la ville n'en a pas), ville et modalite sans caution.
+- Logique Aeroport en 2 reglages : CITY_HAS_AIRPORT (la ville a son propre aeroport) et AIRPORT_SERVICE (livraison aeroport avec listing precis des aeroports desservis si la ville n'en possede pas).
+
+---
+
+## Stack Technique
+
+- Framework : Next.js 16.4 (App Router, Turbopack, Static HTML Export)
+- Interface : React 19.3, Tailwind CSS v4
+- Typage : TypeScript 5.1+
+- Traitement d'images : Sharp (compression WebP automatisee)
+- Deploiement : Cloudflare Pages via Wrangler CLI
+
+---
+
+## Architecture du Projet
+
+public/
+  fleet/               Images WebP des voitures
+  _headers             Regles de securite et cache Cloudflare Pages
+  hero.webp            Image d'accueil optimisee
+  logo.png             Logo de la marque
+  meeting-point.webp   Photo du point de rencontre aeroport
+  og-hero.jpg          Banniere OpenGraph pour partages reseaux sociaux
+src/
+  app/
+    [slug]/page.tsx    Landing pages generees statiquement
+    layout.tsx         Structure globale, polices et JSON-LD Schema
+    page.tsx           Page d'accueil principale
+    robots.ts          Configuration dynamique de robots.txt
+    sitemap.ts         Generateur de sitemap.xml
+  components/          Composants UI (Hero, Fleet, Conditions, FAQ...)
+  context/             Contexte de reservation (dates, devises, lieux)
+  data/
+    config.ts          POINT CENTRAL : toute la configuration client
+    guard.ts           Verificateur de conformite pre-build
+    landings.ts        Definition des pages de destination SEO
+    translations.ts    Dictionnaires FR / EN / AR
+  lib/                 Utilitaires (dates, devises, formateur WhatsApp)
+compress.mjs           Script de conversion et compression d'images
+next.config.ts         Configuration Next.js en export statique
+
+---
+
+## Commandes Principales
+
+- Developpement local :
+  npm run dev
+
+- Traitement des images :
+  npm run images
+
+- Build Demo (Mode Test & Validation Client) :
+  npm run build:demo
+
+- Build Production :
+  npm run build
+
+---
+
+## Deploiement sur Cloudflare Pages
+
+Le deploiement se fait directement depuis votre terminal WSL sans necessiter de serveur distant.
+
+1. Connexion initiale a Cloudflare :
+   npx wrangler login
+
+2. Deploiement d'une version de Demo (Preview) :
+   Pour montrer le site au client avant officialisation (Build Guard desactive et indexation Google bloquee) :
+   npm run build:demo
+   npx wrangler pages deploy out --project-name=nom-client --branch=preview
+
+3. Deploiement Officiel en Production :
+   Une fois le client d'accord et verified.* mis a true dans config.ts :
+   npm run build
+   npx wrangler pages deploy out --project-name=nom-client --branch=main
+
+
+====== FILE: ./compress.mjs ======
+
+import sharp from 'sharp';
+import { readdir, unlink } from 'fs/promises';
+import { existsSync } from 'fs';
+
+async function run() {
+  const files = await readdir('./public/fleet').catch(() => []);
+  for (const file of files) {
+    if (!file.match(/\.(jpg|jpeg|png)$/i)) continue;
+    const name = file.replace(/\.(jpg|jpeg|png)$/i, "");
+    const srcPath = `./public/fleet/${file}`;
+    await sharp(srcPath)
+      .resize({ width: 800, withoutEnlargement: true })
+      .webp({ quality: 78 })
+      .toFile(`./public/fleet/${name}.webp`);
+    await unlink(srcPath);
+    console.log(`[Generated] fleet/${name}.webp (source ${file} supprimée)`);
+  }
+
+  if (existsSync('./public/hero.jpg')) {
+    await sharp('./public/hero.jpg')
+      .resize({ width: 1280, withoutEnlargement: true })
+      .webp({ quality: 80 })
+      .toFile('./public/hero.webp');
+    console.log('[Generated] hero.webp');
+
+    await sharp('./public/hero.jpg')
+      .resize(1200, 630, { fit: 'cover' })
+      .jpeg({ quality: 75, mozjpeg: true, progressive: true })
+      .toFile('./public/og-hero.jpg');
+    console.log('[Generated] og-hero.jpg (OpenGraph 1200x630)');
+
+    await unlink('./public/hero.jpg');
+    console.log('[Cleaned] hero.jpg supprimé');
+  } else {
+    console.warn('⚠️ [Avertissement] hero.jpg introuvable dans public/. Assurez-vous d\'avoir hero.webp et og-hero.jpg déjà présents.');
+  }
+
+  if (existsSync('./public/meeting-point.jpg')) {
+    await sharp('./public/meeting-point.jpg')
+      .resize({ width: 1280, withoutEnlargement: true })
+      .webp({ quality: 78 })
+      .toFile('./public/meeting-point.webp');
+    await unlink('./public/meeting-point.jpg');
+    console.log('[Generated] meeting-point.webp (source meeting-point.jpg supprimée)');
+  } else {
+    console.log('[Skipped] meeting-point.jpg not found');
+  }
+
+  console.log('DONE.');
+}
+
+run();
+
+====== FILE: ./eslint.config.mjs ======
+
+import { defineConfig, globalIgnores } from "eslint/config";
+import nextVitals from "eslint-config-next/core-web-vitals";
+import nextTs from "eslint-config-next/typescript";
+
+const eslintConfig = defineConfig([
+  ...nextVitals,
+  ...nextTs,
+  // Override default ignores of eslint-config-next.
+  globalIgnores([
+    // Default ignores of eslint-config-next:
+    ".next/**",
+    "out/**",
+    "build/**",
+    "next-env.d.ts",
+  ]),
+]);
+
+export default eslintConfig;
+
+
+====== FILE: ./next-env.d.ts ======
+
+/// <reference types="next" />
+/// <reference types="next/image-types/global" />
+import "./.next/dev/types/routes.d.ts";
+import "./.next/dev/types/root-params.d.ts";
+
+// NOTE: This file should not be edited
+// see https://nextjs.org/docs/app/api-reference/config/typescript for more information.
+
+
+====== FILE: ./next.config.ts ======
+
+import type { NextConfig } from "next";
+
+const nextConfig: NextConfig = {
+  output: "export",
+  images: {
+    unoptimized: true,
+  },
+};
+
+export default nextConfig;
+
+====== FILE: ./package.json ======
+
+{
+  "name": "car-rental-template",
+  "version": "1.0.0",
+  "private": true,
+  "engines": {
+    "node": ">=20.x"
+  },
+"scripts": {
+    "dev": "next dev",
+    "prebuild": "eslint",
+    "build": "rm -rf out && next build",
+    "prebuild:demo": "eslint",
+    "build:demo": "rm -rf out && cross-env ALLOW_PLACEHOLDER_CONFIG=true next build",
+    "start": "next start",
+    "lint": "eslint && tsc --noEmit",
+    "images": "node compress.mjs"
+  },
+  "dependencies": {
+    "next": "^16.4.0",
+    "react": "^19.3.0",
+    "react-dom": "^19.3.0"
+  },
+  "devDependencies": {
+    "@tailwindcss/postcss": "^4.3.3",
+    "@types/node": "^20",
+    "@types/react": "^19",
+    "@types/react-dom": "^19",
+    "cross-env": "^7.0.3",
+    "eslint": "^9",
+    "eslint-config-next": "^16.4.0",
+    "sharp": "^0.35.5",
+    "tailwindcss": "^4",
+    "typescript": "^5"
+  }
+}
+
+====== FILE: ./postcss.config.mjs ======
+
+const config = {
+  plugins: {
+    "@tailwindcss/postcss": {},
+  },
+};
+
+export default config;
+
+====== FILE: ./public/_headers ======
+
+/*
+  X-Frame-Options: DENY
+  X-Content-Type-Options: nosniff
+  Referrer-Policy: strict-origin-when-cross-origin
+  Permissions-Policy: camera=(), microphone=(), geolocation=()
+  X-DNS-Prefetch-Control: on
+  Strict-Transport-Security: max-age=31536000; includeSubDomains; preload
+
+/_next/static/*
+  Cache-Control: public, max-age=31536000, immutable
+
+====== FILE: ./src/app/[slug]/page.tsx ======
+
+import type { Metadata } from "next"
+import Image from "next/image"
+import Link from "next/link"
+import { notFound } from "next/navigation"
+import { landings, type Landing } from "@/data/landings"
+import { SITE_URL, siteConfig, type Car, type LocationId } from "@/data/config"
+import { translations } from "@/data/translations"
+import { formatPriceDual } from "@/lib/currency"
+import Shell from "@/components/shell"
+import T from "@/components/t"
+import WaCta from "@/components/wa-cta"
+
+export const dynamicParams = false;
+
+export function generateStaticParams() {
+  return landings.map((l: Landing) => ({ slug: l.slug }))
+}
+
+type Props = { params: Promise<{ slug: string }> }
+const brand = `${siteConfig.brand.name} ${siteConfig.brand.nameLight}`.trim()
+
+export async function generateMetadata({ params }: Props): Promise<Metadata> {
+  const { slug } = await params
+  const l = landings.find((x: Landing) => x.slug === slug)
+  if (!l) return {}
+  const title = `${l.title} | ${brand}`
+  const canonicalUrl = `${SITE_URL}/${l.slug}`
+
+  return { 
+    title, 
+    description: l.description, 
+    alternates: { canonical: canonicalUrl }, 
+    openGraph: { 
+      title, 
+      description: l.description, 
+      url: canonicalUrl, 
+      type: "website", 
+      images: [{ url: "/og-hero.jpg", width: 1200, height: 630 }] 
+    } 
+  }
+}
+
+export default async function LandingPage({ params }: Props) {
+  const { slug } = await params
+  const l = landings.find((x: Landing) => x.slug === slug)
+  if (!l) notFound()
+
+  type LandingKey = keyof typeof translations.fr.landings
+  const pointCount = translations.fr.landings[l.id as LandingKey].points.length
+  const landingLocation: LocationId =
+    l.id === "nearby" ? "nearby" : l.id === "deposit" ? "city" : (siteConfig.booking.locations[0] ?? "city")
+
+  return (
+    <Shell>
+      <section className="mx-auto max-w-[900px] px-6 py-12">
+        <h1 className="text-[34px] font-black"><T k={`landings.${l.id}.h1`} /></h1>
+        <p className="mt-4 text-[15px]"><T k={`landings.${l.id}.intro`} /></p>
+        <ul className="mt-6 space-y-2 text-[14px]">
+          {Array.from({ length: pointCount }).map((_, i) => (
+            <li key={i}>✓ <T k={`landings.${l.id}.points.${i}`} /></li>
+          ))}
+        </ul>
+        <h2 className="mt-10 text-[22px] font-black"><T k="landing.carsTitle" /></h2>
+        <div className="mt-4 grid gap-4 sm:grid-cols-2">
+          {siteConfig.fleet.cars.map((c: Car) => {
+            const dual = formatPriceDual(c.price)
+            return (
+              <div key={c.id} className="flex items-center justify-between gap-3 rounded-2xl border border-zinc-200 bg-white p-4">
+                <div className="flex items-center gap-3 min-w-0">
+                  <div className="relative h-14 w-20 shrink-0 rounded-xl bg-[#faf9f6]">
+                    <Image src={c.image} alt={c.name} fill sizes="80px" className="object-contain p-1" />
+                  </div>
+                  <div className="min-w-0">
+                    <span className="block truncate text-[14px] font-bold text-zinc-900">{c.name}</span>
+                    <span className="block text-[11px] text-zinc-500">
+                      <T k={c.auto ? "fleet.auto" : "fleet.manual"} /> • <T k="fleet.seats" vars={{ n: c.seats }} />
+                    </span>
+                  </div>
+                </div>
+                <div className="text-end shrink-0">
+                  <span className="block text-[13px] font-bold">{dual.base} <T k="common.perDay" /></span>
+                  <span className="block text-[11px] text-zinc-500">{dual.foreign} <T k="common.perDay" /></span>
+                </div>
+              </div>
+            )
+          })}
+        </div>
+        <div className="mt-8 flex flex-wrap gap-3">
+          <WaCta
+            source={`landing-${l.slug}`}
+            defaultLocation={landingLocation}
+            className="rounded-full bg-[#15803d] px-6 py-3 text-[14px] font-bold text-white transition hover:bg-[#166534]"
+          />
+          <Link href="/#fleet" className="rounded-full border px-6 py-3 text-[14px] font-bold">
+            <T k="landing.seeFleet" />
+          </Link>
+        </div>
+      </section>
+    </Shell>
+  )
+}
+
+====== FILE: ./src/app/error.tsx ======
+
+"use client"
+import { useEffect } from "react"
+import Link from "next/link"
+import { useT } from "@/lib/lang"
+
+export default function Error({ error, reset }: { error: Error & { digest?: string }; reset: () => void }) {
+  const { t } = useT();
+
+  useEffect(() => {
+    console.error(error)
+  }, [error])
+
+  return (
+    <div className="flex min-h-screen flex-col items-center justify-center bg-[#faf9f6] px-6 text-center">
+      <h2 className="text-[24px] font-bold text-zinc-900">{t("error.title")}</h2>
+      <p className="mt-2 text-[15px] text-zinc-500">
+        {t("error.text")}
+      </p>
+      <div className="mt-8 flex gap-4">
+        <button onClick={() => reset()} className="rounded-full bg-zinc-900 px-8 py-3.5 text-[14px] font-bold text-white transition hover:bg-black">
+          {t("error.retry")}
+        </button>
+        <Link href="/" className="rounded-full border border-zinc-200 bg-white px-8 py-3.5 text-[14px] font-bold text-zinc-800 transition hover:border-zinc-300">
+          {t("error.home")}
+        </Link>
+      </div>
+    </div>
+  )
+}
+
+====== FILE: ./src/app/globals.css ======
+
+@import "tailwindcss";
+
+:root { 
+  --background: #faf9f6; 
+  --foreground: #171717; 
+  color-scheme: light; 
+}
+
+@theme inline {
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --font-sans: var(--font-geist-sans), var(--font-noto-arabic), system-ui, sans-serif;
+}
+
+html { 
+  scroll-behavior: smooth; 
+  scroll-padding-top: 80px; 
+}
+
+body { 
+  background: var(--background); 
+  color: var(--foreground); 
+  font-family: var(--font-sans);
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  text-rendering: optimizeLegibility;
+}
+
+/* Masque la barre de défilement (filtres de catégories) */
+.scrollbar-hide {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+.scrollbar-hide::-webkit-scrollbar {
+  display: none;
+}
+
+/* Sélection du texte */
+::selection {
+  background: #111;
+  color: #fff;
+}
+
+/* Focus clavier visible */
+:focus-visible {
+  outline: 2px solid #111;
+  outline-offset: 2px;
+}
+
+@media (max-width: 767px) {
+  select, input, textarea { font-size: 16px; }
+}
+
+
+====== FILE: ./src/app/layout.tsx ======
+
+import type { Metadata } from "next";
+import { Geist, Noto_Kufi_Arabic } from "next/font/google";
+import "./globals.css";
+import { IS_PRODUCTION_SITE, SITE_URL, paymentAcceptedSchema, seoDescription, siteConfig, type Car } from "@/data/config";
+import { assertProductionReady } from "@/data/guard";
+import { BookingProvider } from "@/context/BookingContext";
+import { BASE_CURRENCY, FOREIGN_CURRENCY } from "@/lib/currency";
+import { tr } from "@/lib/i18n";
+import { DEFAULT_LANG } from "@/data/translations";
+
+assertProductionReady();
+
+const geistSans = Geist({ variable: "--font-geist-sans", subsets: ["latin"] });
+const notoKufi = Noto_Kufi_Arabic({ variable: "--font-noto-arabic", subsets: ["arabic"], preload: false });
+const BRAND = `${siteConfig.brand.name} ${siteConfig.brand.nameLight}`.trim();
+const PAGE_TITLE = `${tr(DEFAULT_LANG, "seo.locationVoiture")} ${siteConfig.seo.city} | ${BRAND}`;
+
+export const metadata: Metadata = {
+  metadataBase: new URL(SITE_URL),
+  title: PAGE_TITLE,
+  description: seoDescription,
+  keywords: siteConfig.seo.keywords,
+  alternates: { canonical: SITE_URL },
+  icons: { icon: siteConfig.brand.logo, apple: siteConfig.brand.logo },
+  robots: IS_PRODUCTION_SITE ? { index: true, follow: true } : { index: false, follow: false },
+  openGraph: { 
+    url: SITE_URL, 
+    title: PAGE_TITLE, 
+    description: seoDescription, 
+    type: "website", 
+    images: [{ url: "/og-hero.jpg", width: 1200, height: 630 }] 
+  },
+};
+
+const LANG_BOOT = `(function(){var l;try{l=localStorage.getItem("lang")}catch(e){}if(l!=="fr"&&l!=="en"&&l!=="ar"){var n=(navigator.language||"").slice(0,2);l=n==="ar"?"ar":n==="fr"?"fr":"en"}document.documentElement.lang=l;document.documentElement.dir=l==="ar"?"rtl":"ltr"})()`;
+
+export default function RootLayout({ children }: { children: React.ReactNode }) {
+  const phone = siteConfig.contact.phone;
+  const brand = BRAND;
+  const prices = siteConfig.fleet.cars.map((c: Car) => c.price);
+  const priceRange = prices.length ? `${Math.min(...prices)}-${Math.max(...prices)} ${BASE_CURRENCY}` : undefined;
+  const { geo, sameAs } = siteConfig.contact;
+  const { openingHours, addressCountry, acceptForeignCash } = siteConfig.business;
+  const [opens = "00:00", closes = "23:59"] = (openingHours || "").split("-");
+  const gaId = siteConfig.tracking.gaId.trim();
+  const metaPixelId = siteConfig.tracking.metaPixelId.trim();
+
+  const autoRentalSchema = {
+    "@context": "https://schema.org",
+    "@type": "AutoRental",
+    "@id": `${SITE_URL}/#business`,
+    name: brand,
+    url: SITE_URL,
+    telephone: phone,
+    image: [`${SITE_URL}${siteConfig.hero.image}`],
+    logo: `${SITE_URL}${siteConfig.brand.logo}`,
+    description: seoDescription,
+    priceRange,
+    currenciesAccepted: acceptForeignCash ? `${BASE_CURRENCY}, ${FOREIGN_CURRENCY}` : BASE_CURRENCY,
+    ...(paymentAcceptedSchema ? { paymentAccepted: paymentAcceptedSchema } : {}),
+    address: { "@type": "PostalAddress", streetAddress: siteConfig.contact.address, addressLocality: siteConfig.seo.city, addressRegion: siteConfig.seo.region, addressCountry },
+    geo: { "@type": "GeoCoordinates", latitude: geo.lat, longitude: geo.lng },
+    hasMap: siteConfig.contact.googleMapsLink,
+    openingHoursSpecification: { "@type": "OpeningHoursSpecification", dayOfWeek: ["Monday","Tuesday","Wednesday","Thursday","Friday","Saturday","Sunday"], opens, closes },
+    areaServed: siteConfig.seo.areas.map((name: string) => ({ "@type": "City", name })),
+    ...(sameAs.length ? { sameAs } : {}),
+  };
+
+  return (
+    <html lang="fr" suppressHydrationWarning data-scroll-behavior="smooth">
+      <body className={`${geistSans.variable} ${notoKufi.variable} antialiased`}>
+        <script dangerouslySetInnerHTML={{ __html: LANG_BOOT }} />
+        <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(autoRentalSchema).replace(/</g, "\\u003c").replace(/>/g, "\\u003e") }} />
+        {gaId && (
+          <>
+            <script async src={`https://www.googletagmanager.com/gtag/js?id=${encodeURIComponent(gaId)}`} />
+            <script
+              dangerouslySetInnerHTML={{
+                __html: `window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments);}gtag('js',new Date());gtag('config',${JSON.stringify(gaId)});`,
+              }}
+            />
+          </>
+        )}
+        {metaPixelId && (
+          <script
+            dangerouslySetInnerHTML={{
+              __html: `!function(f,b,e,v,n,t,s){if(f.fbq)return;n=f.fbq=function(){n.callMethod?n.callMethod.apply(n,arguments):n.queue.push(arguments)};if(!f._fbq)f._fbq=n;n.push=n;n.loaded=!0;n.version='2.0';n.queue=[];t=b.createElement(e);t.async=!0;t.src=v;s=b.getElementsByTagName(e)[0];s.parentNode.insertBefore(t,s)}(window,document,'script','https://connect.facebook.net/en_US/fbevents.js');fbq('init',${JSON.stringify(metaPixelId)});fbq('track','PageView');`,
+            }}
+          />
+        )}
+        <BookingProvider>{children}</BookingProvider>
+      </body>
+    </html>
+  );
+}
+
+====== FILE: ./src/app/not-found.tsx ======
+
+import Link from "next/link"
+import Shell from "@/components/shell"
+import T from "@/components/t"
+
+export default function NotFound() {
+  return (
+    <Shell>
+      <div className="flex min-h-[60vh] flex-col items-center justify-center px-6 text-center">
+        <h1 className="text-[120px] font-black text-zinc-200 leading-none">404</h1>
+        <h2 className="mt-4 text-[24px] font-bold text-zinc-900"><T k="notFound.title" /></h2>
+        <p className="mt-2 text-[15px] text-zinc-500 max-w-[400px]">
+          <T k="notFound.text" />
+        </p>
+        <Link href="/" className="mt-8 rounded-full bg-zinc-900 px-8 py-3.5 text-[14px] font-bold text-white transition hover:bg-black">
+          <T k="notFound.back" />
+        </Link>
+      </div>
+    </Shell>
+  )
+}
+
+====== FILE: ./src/app/page.tsx ======
+
+
+import Shell from "@/components/shell"
+import Hero from "@/components/hero"
+import Fleet from "@/components/fleet"
+import TrustStrip from "@/components/trust-strip"
+import AirportMeeting from "@/components/AirportMeeting"
+import HowItWorks from "@/components/how-it-works"
+import Conditions from "@/components/conditions"
+import Reviews from "@/components/reviews"
+import Faq from "@/components/faq"
+import { siteConfig } from "@/data/config"
+
+export default function Home() {
+  return (
+    <Shell>
+      <Hero />
+      <Fleet />
+      <TrustStrip />
+      {siteConfig.booking.airportService && <AirportMeeting />}
+      <HowItWorks />
+      <Conditions />
+      <Reviews />
+      <Faq />
+    </Shell>
+  )
+}
+
+====== FILE: ./src/app/robots.ts ======
+
+import type { MetadataRoute } from "next"
+export const dynamic = "force-static";
+import { IS_PRODUCTION_SITE, SITE_URL } from "@/data/config"
+
+export default function robots(): MetadataRoute.Robots {
+  // Hors production (preview, build:demo) : on interdit l'indexation.
+  if (!IS_PRODUCTION_SITE) return { rules: { userAgent: "*", disallow: "/" } }
+  return { rules: { userAgent: "*", allow: "/" }, sitemap: `${SITE_URL}/sitemap.xml` }
+}
+
+
+====== FILE: ./src/app/sitemap.ts ======
+
+import type { MetadataRoute } from "next"
+export const dynamic = "force-static";
+import { IS_PRODUCTION_SITE, SITE_URL, siteConfig } from "@/data/config"
+import { landings, type Landing } from "@/data/landings"
+
+export default function sitemap(): MetadataRoute.Sitemap {
+  if (!IS_PRODUCTION_SITE) return []
+
+  const lastModified = new Date(siteConfig.website.contentUpdated)
+  return [
+    { url: SITE_URL, lastModified, changeFrequency: "weekly", priority: 1 },
+    ...landings.map((l: Landing) => ({ url: `${SITE_URL}/${l.slug}`, lastModified, changeFrequency: "monthly" as const, priority: 0.8 })),
+  ]
+}
+
+====== FILE: ./src/components/AirportMeeting.tsx ======
+
+"use client"
+import T from "@/components/t"
+import MeetingImage from "@/components/meeting-image"
+import { siteConfig } from "@/data/config"
+import { useT } from "@/lib/lang"
+
+export default function AirportMeeting() {
+  const { t, lang } = useT()
+  const isFree = siteConfig.booking.freeAirportDelivery
+  // Ville sans aéroport : on liste les aéroports vers lesquels l'agence livre.
+  const airports = siteConfig.booking.cityHasAirport ? [] : siteConfig.seo.deliveryAirports
+
+  return (
+    <section id="meeting" className="max-w-[1280px] mx-auto px-6 py-12">
+      <div className="bg-white rounded-[24px] border border-zinc-100 overflow-hidden grid md:grid-cols-2">
+        <div className="p-8 md:p-10">
+          <h2 className="text-[22px] font-bold tracking-tight">
+            <T k="meeting.title" />
+          </h2>
+          <p className="text-[13px] text-zinc-500 mt-2 leading-relaxed">
+            <T k="meeting.text" />
+          </p>
+          {airports.length > 0 && (
+            <div className="mt-5">
+              <p className="text-[12px] font-semibold uppercase text-zinc-500">{t("meeting.airportsTitle")}</p>
+              <ul className="mt-2 flex flex-wrap gap-2">
+                {airports.map((a) => (
+                  <li key={a.code} className="rounded-full border border-zinc-200 bg-[#faf9f6] px-3 py-1.5 text-[12px] font-semibold text-zinc-800">
+                    ✈️ {lang === "ar" ? a.nameAr : a.name} <bdi dir="ltr" className="text-zinc-500">({a.code})</bdi>
+                  </li>
+                ))}
+              </ul>
+            </div>
+          )}
+          <ul className="mt-5 space-y-2 text-[13px] text-zinc-700">
+            <li><T k="meeting.item1" /></li>
+            <li><T k={isFree ? "meeting.item2Free" : "meeting.item2Paid"} /></li>
+            <li><T k="meeting.item3" /></li>
+          </ul>
+        </div>
+        <div className="relative h-[260px] md:h-auto">
+          <MeetingImage />
+        </div>
+      </div>
+    </section>
+  )
+}
+
+====== FILE: ./src/components/conditions.tsx ======
+
+"use client"
+import { siteConfig } from "@/data/config"
+import { translations } from "@/data/translations"
+import { useLang } from "@/lib/lang"
+
+const card = "bg-white rounded-2xl p-6 border border-zinc-200"
+const list = "text-[13px] text-zinc-600 space-y-2"
+
+export default function Conditions() {
+  const lang = useLang();
+  const c = translations[lang].conditions || translations.fr.conditions;
+  const paymentLast = siteConfig.booking.withCaution ? c.payment.deposit : c.payment.noDeposit;
+
+  return (
+    <section id="conditions" className="py-16 bg-[#faf9f6]">
+      <div className="max-w-[1280px] mx-auto px-6">
+        <h2 className="text-[32px] font-black mb-8">{c.title}</h2>
+        <div className="grid md:grid-cols-4 gap-6">
+          <div className={card}>
+            <h3 className="font-bold text-[14px] mb-3">{c.included.title}</h3>
+            <ul className={list}>
+              {c.included.items.map((item, i) => <li key={i}>• {item}</li>)}
+            </ul>
+          </div>
+          <div className={card}>
+            <h3 className="font-bold text-[14px] mb-3">{c.excluded.title}</h3>
+            <ul className={list}>
+              {c.excluded.items.map((item, i) => <li key={i}>• {item}</li>)}
+            </ul>
+          </div>
+          <div className={card}>
+            <h3 className="font-bold text-[14px] mb-3">{c.documents.title}</h3>
+            <ul className={list}>
+              {c.documents.items.map((item, i) => <li key={i}>• {item}</li>)}
+            </ul>
+          </div>
+          <div className={card}>
+            <h3 className="font-bold text-[14px] mb-3">{c.payment.title}</h3>
+            <ul className={list}>
+              {c.payment.items.map((item, i) => <li key={i}>• {item}</li>)}
+              <li>• {paymentLast}</li>
+            </ul>
+          </div>
+        </div>
+      </div>
+    </section>
+  )
+}
+
+====== FILE: ./src/components/faq.tsx ======
+
+"use client"
+import { useState } from "react"
+import { faqKeys } from "@/data/config"
+import { useT } from "@/lib/lang"
+
+export default function FAQ() {
+  const [open, setOpen] = useState<number | null>(0)
+  const { t } = useT()
+
+  return (
+    <section id="faq" className="bg-white py-16">
+      <div className="mx-auto max-w-[800px] px-6">
+        <h2 className="text-center text-[32px] font-black text-zinc-900">{t("faq.title")}</h2>
+        <p className="mt-2 text-center text-[14px] text-zinc-500">{t("faq.subtitle")}</p>
+        <div className="mt-8 space-y-3">
+          {faqKeys.map((k, i) => {
+            const isOpen = open === i
+            return (
+              <div key={k} className="rounded-2xl border border-zinc-200 bg-[#faf9f6]">
+                <button
+                  type="button"
+                  aria-expanded={isOpen}
+                  aria-controls={`faq-answer-${k}`}
+                  onClick={() => setOpen(isOpen ? null : i)}
+                  className="flex w-full items-center justify-between p-5 text-start"
+                >
+                  <span className="pe-4 text-[14px] font-semibold text-zinc-900">{t(`faq.${k}.q`)}</span>
+                  <span className="shrink-0 text-[18px] text-zinc-400">{isOpen ? "−" : "+"}</span>
+                </button>
+                <div
+                  id={`faq-answer-${k}`}
+                  className={`px-5 pb-5 text-[13px] leading-relaxed text-zinc-600 ${isOpen ? "block" : "hidden"}`}
+                >
+                  {t(`faq.${k}.a`)}
+                </div>
+              </div>
+            )
+          })}
+        </div>
+      </div>
+    </section>
+  )
+}
+
+====== FILE: ./src/components/fleet.tsx ======
+
+"use client"
+import Image from "next/image"
+import { useMemo, useState } from "react"
+import { siteConfig, type Car, type CarCategory } from "@/data/config"
+import { useBooking } from "@/context/BookingContext"
+import { BASE_CURRENCY, formatPrice, formatPriceDual, formatTotal } from "@/lib/currency"
+import { fmtDate } from "@/lib/dates"
+import { LOCALES } from "@/lib/i18n"
+import { getWhatsAppLink } from "@/lib/whatsapp"
+import { useT } from "@/lib/lang"
+
+export default function Fleet() {
+  const { t, tn, lang } = useT()
+  const { location, pickup, ret, days, currency } = useBooking()
+  const [cat, setCat] = useState<CarCategory | "all">("all")
+  const locale = LOCALES[lang]
+
+  const availableCategories = ["all", ...Array.from(new Set(siteConfig.fleet.cars.map((c: Car) => c.category)))];
+
+  const filtered = useMemo(() => {
+    if (cat === "all") return siteConfig.fleet.cars
+    return siteConfig.fleet.cars.filter((c: Car) => c.category === cat)
+  }, [cat])
+
+  return (
+    <section id="fleet" className="bg-white px-6 py-16">
+      <div className="mx-auto max-w-[1280px]">
+        <div className="flex flex-wrap items-end justify-between gap-4">
+          <div>
+            <h2 className="text-[32px] font-black leading-none">{t("fleet.title")}</h2>
+            <p className="mt-2 text-[14px] text-zinc-600">{t("fleet.subtitle")}</p>
+          </div>
+          <div className="flex gap-2 overflow-auto pb-1 scrollbar-hide">
+            {availableCategories.map((c) => (
+              <button
+                key={c}
+                onClick={() => setCat(c as CarCategory | "all")}
+                aria-pressed={cat === c}
+                className={`whitespace-nowrap rounded-full border px-4 py-2 text-[12px] font-bold transition ${cat === c ? "bg-zinc-900 text-white border-zinc-900" : "bg-white text-zinc-700 border-zinc-200 hover:border-zinc-300"}`}
+              >
+                {t(`fleet.categories.${c}`)}
+              </button>
+            ))}
+          </div>
+        </div>
+
+        <div className="mt-8 grid gap-6 md:grid-cols-2 lg:grid-cols-3">
+          {filtered.map((car: Car) => {
+            const dual = formatPriceDual(car.price)
+            const totalMad = car.price * (days || 0)
+            const dualTotal = formatPriceDual(totalMad)
+            const waLink = getWhatsAppLink(lang, {
+              car: car.name,
+              pickupDate: pickup ? fmtDate(pickup, locale) : undefined,
+              returnDate: ret ? fmtDate(ret, locale) : undefined,
+              location: t(`locations.${location}`),
+              days: days > 0 ? tn("common.days", days) : undefined,
+              pricePerDay: car.price,
+              total: days > 0 ? totalMad : undefined,
+              ref: `fleet-${car.id}`,
+            })
+
+            return (
+              <div key={car.id} className="overflow-hidden rounded-[24px] border border-zinc-200 bg-[#faf9f6]">
+                <div className="relative aspect-[16/10] bg-white">
+                  <Image src={car.image} alt={car.name} fill sizes="(max-width: 768px) 100vw, (max-width: 1024px) 50vw, 33vw" className="object-contain p-4" />
+                  {car.popular && <span className="absolute start-4 top-4 rounded-full bg-zinc-900 px-3 py-1 text-[10px] font-bold text-white">{t("fleet.popular")}</span>}
+                  <span className="absolute end-4 top-4 rounded-full bg-white px-3 py-1 text-[10px] font-bold border border-zinc-100">{car.auto ? t("fleet.auto") : t("fleet.manual")} • {t("fleet.seats", { n: car.seats })}</span>
+                </div>
+                <div className="p-5">
+                  <h3 className="text-[18px] font-bold leading-tight">{car.name}</h3>
+                  <p className="mt-1 text-[12px] text-zinc-500">{car.fuel === "diesel" ? t("fleet.diesel") : t("fleet.petrol")}</p>
+                  <div className="mt-4 flex items-baseline justify-between">
+                    <div className="flex flex-col">
+                      <span className="text-[20px] font-black leading-none">{formatPrice(car.price, currency)}</span>
+                      <span className="mt-1 text-[11px] text-zinc-500">{currency === BASE_CURRENCY ? dual.foreign : `~${dual.base}`} {t("common.perDay")}</span>
+                    </div>
+                    {days > 0 && (
+                      <div className="text-end">
+                        <div className="text-[13px] font-semibold">{formatTotal(car.price, days, currency)}</div>
+                        <div className="text-[11px] text-zinc-500">{currency === BASE_CURRENCY ? dualTotal.foreign : `~${dualTotal.base}`} • {tn("common.days", days)}</div>
+                      </div>
+                    )}
+                  </div>
+                  {days > 0 && (siteConfig.booking.advancePaymentDh !== null || siteConfig.booking.freeCancellation) && (
+                    <p className="mt-3 text-[11px] font-medium text-emerald-700">
+                      {[
+                        siteConfig.booking.advancePaymentDh !== null ? t("fleet.advance", { amount: formatPrice(siteConfig.booking.advancePaymentDh, BASE_CURRENCY) }) : null,
+                        siteConfig.booking.freeCancellation ? t("fleet.freeCancel") : null,
+                      ].filter(Boolean).join(" • ")}
+                    </p>
+                  )}
+                  <a href={waLink} target="_blank" rel="noopener noreferrer" className="mt-4 flex w-full items-center justify-center rounded-full bg-zinc-900 py-3 text-[14px] font-bold text-white hover:bg-black transition">
+                    {t("fleet.book")} <span className="inline-block ms-1 rtl:rotate-180">→</span>
+                  </a>
+                </div>
+              </div>
+            )
+          })}
+        </div>
+        <p className="mt-6 text-center text-[11px] text-zinc-500">{t("fleet.note")}</p>
+      </div>
+    </section>
+  )
+}
+
+====== FILE: ./src/components/footer.tsx ======
+
+import Image from "next/image"
+import Link from "next/link"
+import { showReviews, siteConfig } from "@/data/config"
+import { landings, type Landing } from "@/data/landings"
+import T from "@/components/t"
+
+type NavLink = { key: string; href: string };
+
+const NAV: NavLink[] = [
+  { key: "nav.fleet", href: "/#fleet" },
+  { key: "nav.conditions", href: "/#conditions" },
+  { key: "nav.reviews", href: "/#reviews" },
+].filter((l) => l.key !== "nav.reviews" || showReviews)
+
+const INFO: NavLink[] = [
+  { key: "nav.how", href: "/#how-it-works" },
+  ...(siteConfig.booking.airportService ? [{ key: "meeting.title", href: "/#meeting" }] : []),
+  { key: "nav.faq", href: "/#faq" },
+]
+
+const hostOf = (url: string) => {
+  try { return new URL(url).hostname } catch { return url }
+}
+
+export default function Footer() {
+  const brand = `${siteConfig.brand.name} ${siteConfig.brand.nameLight}`.trim()
+  const phoneCall = siteConfig.contact.phone;
+  const socials = siteConfig.contact.sameAs || []
+  const { ice, rc } = siteConfig.business.legal
+  const legalIds = [ice ? `ICE: ${ice}` : null, rc ? `RC: ${rc}` : null].filter(Boolean).join(" • ")
+
+  return (
+    <footer className="bg-[#111] text-zinc-400 py-12">
+      <div className="max-w-[1280px] mx-auto px-6 grid md:grid-cols-4 gap-8">
+        <div>
+          <Link href="/" className="flex items-center gap-2">
+            <Image src={siteConfig.brand.logo} alt={brand} width={32} height={32} className="rounded-full bg-white p-[3px]" />
+            <span className="font-black text-white tracking-tight">
+              {siteConfig.brand.name}
+              <span className="font-light">{siteConfig.brand.nameLight}</span>
+            </span>
+          </Link>
+          <p className="text-[13px] mt-4 leading-relaxed">
+            <T k="footer.description" />
+          </p>
+          {socials.length > 0 && (
+            <div className="flex gap-2 mt-5">
+              {socials.map((url) => {
+                const isFb = url.includes("facebook")
+                const isIg = url.includes("instagram")
+                const isTk = url.includes("tiktok")
+                const label = isFb ? "FB" : isIg ? "IG" : isTk ? "TK" : "↗"
+                const name = isFb ? "Facebook" : isIg ? "Instagram" : isTk ? "TikTok" : hostOf(url)
+                return (
+                  <a
+                    key={url}
+                    href={url}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    aria-label={name}
+                    className="w-8 h-8 rounded-full bg-zinc-800 text-white flex items-center justify-center text-[11px] font-bold hover:bg-white hover:text-black transition"
+                  >
+                    {label}
+                  </a>
+                )
+              })}
+            </div>
+          )}
+        </div>
+
+        <div>
+          <h2 className="text-white font-bold text-[13px] mb-3">
+            <T k="footer.navTitle" />
+          </h2>
+          {NAV.map((l) => (
+            <Link key={l.href} href={l.href} className="block text-[13px] py-1 hover:text-white">
+              <T k={l.key} />
+            </Link>
+          ))}
+          {landings.length > 0 && (
+            <div className="mt-4 pt-4 border-t border-zinc-800 space-y-1">
+              {landings.map((l: Landing) => (
+                <Link key={l.slug} href={`/${l.slug}`} className="block text-[12px] py-1 hover:text-white">
+                  <T k={`landings.${l.id}.footerLabel`} />
+                </Link>
+              ))}
+            </div>
+          )}
+        </div>
+
+        <div>
+          <h2 className="text-white font-bold text-[13px] mb-3">
+            <T k="footer.infoTitle" />
+          </h2>
+          {INFO.map((l) => (
+            <Link key={l.href} href={l.href} className="block text-[13px] py-1 hover:text-white">
+              <T k={l.key} />
+            </Link>
+          ))}
+        </div>
+
+        <div>
+          <h2 className="text-white font-bold text-[13px] mb-3">
+            <T k="footer.contactTitle" />
+          </h2>
+          <p className="text-[13px]">
+            <a href={`tel:${phoneCall.replace(/\s+/g, '')}`} className="hover:text-white">
+              <bdi dir="ltr">{siteConfig.contact.phoneDisplay}</bdi>
+            </a>
+          </p>
+          <p className="text-[13px] mt-1">{siteConfig.contact.address}</p>
+          <a href={siteConfig.contact.googleMapsLink} target="_blank" rel="noopener noreferrer" className="text-[12px] underline mt-2 inline-block hover:text-white">
+            <T k="footer.seeMap" />
+          </a>
+        </div>
+      </div>
+
+      <div className="max-w-[1280px] mx-auto px-6 mt-10 pt-6 border-t border-zinc-800 text-[11px] text-center space-y-1.5">
+        <p><T k="footer.legalNotice" /></p>
+        {legalIds && <p className="text-zinc-500">{legalIds}</p>}
+        <p><T k="footer.rights" vars={{ year: new Date().getFullYear(), brand }} /></p>
+      </div>
+    </footer>
+  )
+}
+
+====== FILE: ./src/components/header.tsx ======
+
+"use client"
+import { useState, useEffect } from "react"
+import Image from "next/image"
+import Link from "next/link"
+import { showReviews, siteConfig } from "@/data/config"
+import { getWhatsAppLink } from "@/lib/whatsapp"
+import { BASE_CURRENCY, nextCurrency } from "@/lib/currency"
+import { useBooking } from "@/context/BookingContext"
+import { useT } from "@/lib/lang"
+import LangSwitcher from "@/components/lang-switcher"
+
+type NavLink = { key: string; href: string };
+const LINKS: NavLink[] = [
+  { key: "nav.fleet", href: "/#fleet" },
+  { key: "nav.conditions", href: "/#conditions" },
+  { key: "nav.how", href: "/#how-it-works" },
+  { key: "nav.reviews", href: "/#reviews" },
+  { key: "nav.faq", href: "/#faq" },
+].filter((l) => l.key !== "nav.reviews" || showReviews);
+
+export default function Header() {
+  const [open, setOpen] = useState(false)
+  const { currency, setCurrency } = useBooking()
+  const { lang, t } = useT()
+  const brand = `${siteConfig.brand.name} ${siteConfig.brand.nameLight}`.trim()
+  const whatsappLink = getWhatsAppLink(lang, { ref: "header-desktop" })
+  const whatsappMobile = getWhatsAppLink(lang, { ref: "header-mobile" })
+  const phoneCall = siteConfig.contact.phone;
+  
+  useEffect(() => {
+    const handleEsc = (e: KeyboardEvent) => {
+      if (e.key === "Escape") setOpen(false);
+    };
+    if (open) window.addEventListener("keydown", handleEsc);
+    return () => window.removeEventListener("keydown", handleEsc);
+  }, [open]);
+
+  return (
+    <header className="sticky top-0 z-40 w-full bg-[#faf9f6]/90 backdrop-blur-xl border-b border-zinc-100">
+      <div className="max-w-[1280px] mx-auto px-6 h-[68px] flex items-center justify-between gap-3">
+        <Link href="/" className="flex items-center gap-2 font-black tracking-tight min-w-0">
+          <Image src={siteConfig.brand.logo} alt={brand} width={32} height={32} className="rounded-full object-cover shrink-0" />
+          <span className="text-[17px] text-zinc-900 truncate">{siteConfig.brand.name}<span className="font-light text-zinc-500">{siteConfig.brand.nameLight}</span></span>
+        </Link>
+        <nav className="hidden lg:flex items-center gap-7">
+          {LINKS.map((l: { href: string; key: string }) => (
+            <Link key={l.href} href={l.href} className="text-[13px] font-medium text-zinc-600 hover:text-zinc-900 transition">{t(l.key)}</Link>
+          ))}
+        </nav>
+        <div className="flex items-center gap-3">
+          <div className="hidden lg:flex items-center gap-3">
+            <button type="button" onClick={() => setCurrency(nextCurrency(currency))} className="text-[11px] font-bold tracking-wide border border-zinc-200 rounded-full px-4 py-2 hover:bg-white transition">
+              {currency === BASE_CURRENCY ? t("common.showEur") : t("common.showMad")}
+            </button>
+            <a href={`tel:${phoneCall.replace(/\s+/g, '')}`} className="hidden text-[11px] text-zinc-500 xl:block hover:text-zinc-900"><bdi dir="ltr">{siteConfig.contact.phoneDisplay}</bdi></a>
+            <a href={whatsappLink} target="_blank" rel="noopener noreferrer" className="bg-[#1a1a1a] text-white rounded-full px-5 py-2.5 text-[13px] font-bold hover:bg-black transition">{t("common.whatsapp")}</a>
+          </div>
+          <LangSwitcher />
+          <button type="button" aria-controls="mobile-menu" aria-label={t("common.menu")} aria-expanded={open} onClick={() => setOpen(!open)} className="lg:hidden w-9 h-9 rounded-full bg-white border border-zinc-200 flex items-center justify-center">{open ? "✕" : "☰"}</button>
+        </div>
+      </div>
+      {open && (
+        <nav id="mobile-menu" aria-label={t("common.menu")} className="lg:hidden border-t border-zinc-100 bg-white px-6 py-4 space-y-3">
+          {LINKS.map((l: NavLink) => (
+            <Link key={l.href} href={l.href} onClick={() => setOpen(false)} className="block text-[14px] font-medium py-2">{t(l.key)}</Link>
+          ))}
+          <button type="button" onClick={() => setCurrency(nextCurrency(currency))} className="w-full rounded-full border border-zinc-200 py-2.5 text-[12px] font-bold">{currency === BASE_CURRENCY ? t("common.showEur") : t("common.showMad")}</button>
+          <div className="grid grid-cols-2 gap-2 mt-2">
+            <a href={`tel:${phoneCall.replace(/\s+/g, '')}`} className="bg-zinc-100 text-zinc-900 rounded-full py-3 text-center text-[14px] font-bold block">{t("common.call")}</a>
+            <a href={whatsappMobile} target="_blank" rel="noopener noreferrer" className="bg-[#1a1a1a] text-white rounded-full py-3 text-center text-[14px] font-bold block">{t("common.whatsapp")}</a>
+          </div>
+        </nav>
+      )}
+    </header>
+  )
+}
+
+====== FILE: ./src/components/hero.tsx ======
+
+"use client"
+import Image from "next/image"
+import { useEffect, useState } from "react"
+import { siteConfig, type Car, type LocationId } from "@/data/config"
+import { getWhatsAppLink } from "@/lib/whatsapp"
+import { useBooking } from "@/context/BookingContext"
+import { formatPrice, BASE_CURRENCY } from "@/lib/currency"
+import { fmtDate, todayInZone } from "@/lib/dates"
+import { LOCALES } from "@/lib/i18n"
+import { useT } from "@/lib/lang"
+
+type DPProps = { value: string; onChange: (v: string) => void; placeholder: string; minDate?: string; disabledMessage?: string }
+
+function DatePicker({ value, onChange, placeholder, minDate, disabledMessage }: DPProps) {
+  const { lang, t } = useT()
+  const locale = LOCALES[lang]
+  const weekdays = t("calendar.weekdays").split(",")
+  const [open, setOpen] = useState(false)
+
+  const monthOf = (iso: string) => { const [y, m] = iso.split("-").map(Number); return new Date(Date.UTC(y, m - 1, 1)) }
+  const base = () => (value ? monthOf(value) : minDate ? monthOf(minDate) : new Date(Date.UTC(new Date().getUTCFullYear(), new Date().getUTCMonth(), 1)))
+  const [month, setMonth] = useState<Date>(base)
+  const y = month.getUTCFullYear()
+  const m = month.getUTCMonth()
+  const offset = (new Date(Date.UTC(y, m, 1)).getUTCDay() + 6) % 7
+  const count = new Date(Date.UTC(y, m + 1, 0)).getUTCDate()
+
+  useEffect(() => {
+    if (!open) return
+    const prevOverflow = document.body.style.overflow
+    const onKey = (e: KeyboardEvent) => { if (e.key === "Escape") setOpen(false) }
+    document.addEventListener("keydown", onKey)
+    document.body.style.overflow = "hidden"
+    return () => {
+      document.removeEventListener("keydown", onKey)
+      document.body.style.overflow = prevOverflow
+    }
+  }, [open])
+
+  return (
+    <div className="relative">
+      <button 
+        type="button" 
+        disabled={!!disabledMessage} 
+        aria-haspopup="dialog"
+        aria-expanded={open}
+        onClick={() => { if (!open) setMonth(base()); setOpen(!open) }} 
+        className="w-full rounded-xl border border-zinc-200 bg-white px-4 py-3 text-start text-[14px] disabled:opacity-50"
+      >
+        {value ? fmtDate(value, locale) : placeholder}
+      </button>
+      {disabledMessage && <p className="mt-1 text-[11px] text-zinc-500">{disabledMessage}</p>}
+      {open && (
+        <>
+          <div className="fixed inset-0 z-[60] bg-black/40 backdrop-blur-sm" onClick={() => setOpen(false)} aria-hidden="true" />
+          <div 
+            role="dialog" 
+            aria-modal="true" 
+            aria-label={placeholder}
+            className="fixed left-1/2 top-1/2 z-[70] w-[92vw] max-w-[340px] max-h-[90dvh] overflow-y-auto -translate-x-1/2 -translate-y-1/2 rounded-[20px] border border-zinc-200 bg-white p-5 shadow-2xl"
+          >
+            <div className="mb-3 flex items-center justify-between">
+              <button type="button" aria-label={t("calendar.prev")} className="h-10 w-10 flex items-center justify-center rounded-full hover:bg-zinc-100" onClick={() => setMonth(new Date(Date.UTC(y, m - 1, 1)))}><span className="inline-block rtl:rotate-180">‹</span></button>
+              <span className="text-[14px] font-bold capitalize" aria-live="polite">{month.toLocaleDateString(locale, { timeZone: "UTC", month: "long", year: "numeric" })}</span>
+              <button type="button" aria-label={t("calendar.next")} className="h-10 w-10 flex items-center justify-center rounded-full hover:bg-zinc-100" onClick={() => setMonth(new Date(Date.UTC(y, m + 1, 1)))}><span className="inline-block rtl:rotate-180">›</span></button>
+            </div>
+            <div className="mb-2 grid grid-cols-7 text-center text-[10px] font-medium text-zinc-500" aria-hidden="true">{weekdays.map((d: string, i: number) => <span key={i} className="py-1">{d}</span>)}</div>
+            <div className="grid grid-cols-7 gap-1">
+              {Array.from({ length: offset }, (_: unknown, i: number) => <div key={`e${i}`} />)}
+              {Array.from({ length: count }, (_: unknown, i: number) => {
+                const dateObj = new Date(Date.UTC(y, m, i + 1));
+                const iso = `${dateObj.getUTCFullYear()}-${String(dateObj.getUTCMonth() + 1).padStart(2, "0")}-${String(dateObj.getUTCDate()).padStart(2, "0")}`;
+                const disabled = minDate ? iso < minDate : false
+                const isSelected = value === iso
+                const fullDateAria = dateObj.toLocaleDateString(locale, { timeZone: "UTC", weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' });
+                
+                return (
+                  <button 
+                    key={iso} 
+                    type="button" 
+                    disabled={disabled} 
+                    aria-pressed={isSelected} 
+                    aria-label={fullDateAria}
+                    onClick={() => { onChange(iso); setOpen(false) }} 
+                    className={`h-10 rounded-full text-[13px] font-medium transition ${isSelected ? "bg-zinc-900 text-white" : "hover:bg-zinc-100"} disabled:opacity-30`}
+                  >
+                    {i + 1}
+                  </button>
+                )
+              })}
+            </div>
+            <button type="button" onClick={() => setOpen(false)} className="mt-4 w-full rounded-full bg-zinc-100 py-2.5 text-[13px] font-semibold">{t("common.close")}</button>
+          </div>
+        </>
+      )}
+    </div>
+  )
+}
+
+export default function Hero() {
+  const { location, setLocation, pickup, setPickup, ret, setReturn, days, currency } = useBooking()
+  const { lang, t, tn } = useT()
+  const [selectedCar, setSelectedCar] = useState<string>("")
+  const [todayISO, setTodayISO] = useState<string>(() => todayInZone(siteConfig.business.timezone))
+  const minPrice = siteConfig.fleet.cars.length > 0 ? Math.min(...siteConfig.fleet.cars.map((c: Car) => c.price)) : 0;
+  const locale = LOCALES[lang]
+
+  useEffect(() => {
+    setTodayISO(todayInZone(siteConfig.business.timezone))
+  }, [])
+
+  const features = [
+    ...(!siteConfig.booking.withCaution ? ["hero.features.noDeposit"] : []),
+    ...(siteConfig.booking.unlimitedKm ? ["hero.features.unlimitedKm"] : []),
+    ...(siteConfig.booking.airportService && siteConfig.booking.freeAirportDelivery ? ["hero.features.freeAirport"] : []),
+  ];
+
+  const hasDates = !!(pickup && ret)
+  const hasCar = !!selectedCar
+  const canOpenWa = hasDates || hasCar
+  const carObj = siteConfig.fleet.cars.find((c: Car) => c.id === selectedCar)
+
+  const directLink = getWhatsAppLink(lang, {
+    car: carObj?.name,
+    pickupDate: pickup ? fmtDate(pickup, locale) : undefined,
+    returnDate: ret ? fmtDate(ret, locale) : undefined,
+    location: t(`locations.${location}`),
+    days: days > 0 ? tn("common.days", days) : undefined,
+    pricePerDay: carObj?.price,
+    total: days > 0 && carObj ? carObj.price * days : undefined,
+    ref: canOpenWa ? "hero-whatsapp-direct" : "hero-search",
+  })
+
+  const handleMainCta = () => {
+    if (canOpenWa) {
+      window.open(directLink, "_blank", "noopener,noreferrer")
+    } else {
+      document.getElementById("fleet")?.scrollIntoView({ behavior: "smooth" })
+    }
+  }
+
+  return (
+    <section className="relative bg-[#faf9f6]">
+      <div className="relative aspect-video w-full md:absolute md:inset-0 md:aspect-auto">
+        <Image src={siteConfig.hero.image} alt={t("hero.imageAlt")} fill priority sizes="100vw" className="object-cover object-center" />
+        <div className="absolute inset-0 hidden bg-gradient-to-r from-[#faf9f6] via-[#faf9f6]/60 to-transparent md:block rtl:bg-gradient-to-l" />
+      </div>
+      <div className="relative mx-auto max-w-[1280px] px-6 py-8 md:min-h-[640px] md:py-14">
+        <div className="md:max-w-[520px]">
+          <div className="mb-4 flex flex-wrap gap-2">
+            {siteConfig.booking.airportService && (
+              <span className="rounded-full border bg-white px-3 py-1 text-[11px]">{t("hero.airportBadge")}</span>
+            )}
+            <span className="rounded-full border bg-white px-3 py-1 text-[11px] font-bold">{t("hero.priceBadge", { price: formatPrice(minPrice, currency) })}</span>
+          </div>
+          <h1 className="text-[36px] font-black leading-[0.95] md:text-[44px]">
+            {t("hero.title")}<br />
+            <span className="text-zinc-500">{t("hero.titleAccent")}</span>
+          </h1>
+          <p className="mt-4 text-[14px] text-zinc-700">{t("hero.description")}</p>
+          <div className="mt-3 flex flex-wrap gap-2">{features.map((f: string) => <span key={f} className="rounded-full bg-zinc-900 px-3 py-1 text-[11px] text-white">{t(f)}</span>)}</div>
+
+          <div className="mt-8 rounded-[22px] border border-zinc-200 bg-white p-5 shadow-sm">
+            <div className="grid grid-cols-2 gap-4">
+              <div className="col-span-2">
+                <label className="mb-2 block text-[11px] font-semibold uppercase">{t("hero.location")}</label>
+                <select aria-label={t("hero.location")} value={location} onChange={(e) => setLocation(e.target.value as LocationId)} className="w-full rounded-xl border border-zinc-200 bg-white px-4 py-3 text-[14px] font-medium">
+                  {siteConfig.booking.locations.map((l: string) => <option key={l} value={l}>{t(`locations.${l}`)}</option>)}
+                </select>
+              </div>
+              <div><span className="mb-2 block text-[11px] font-semibold uppercase">{t("hero.pickup")}</span><DatePicker value={pickup} onChange={setPickup} placeholder={t("hero.pickupPlaceholder")} minDate={todayISO} /></div>
+              <div><span className="mb-2 block text-[11px] font-semibold uppercase">{t("hero.return")}</span><DatePicker value={ret} onChange={setReturn} placeholder={t("hero.returnPlaceholder")} minDate={pickup || todayISO} disabledMessage={!pickup ? t("hero.pickFirst") : undefined} /></div>
+              <div className="col-span-2">
+                <label className="mb-2 block text-[11px] font-semibold uppercase">{t("hero.carOptional")}</label>
+                <select aria-label={t("hero.carOptional")} value={selectedCar} onChange={(e) => setSelectedCar(e.target.value)} className="w-full rounded-xl border border-zinc-200 bg-white px-4 py-3 text-[14px] font-medium">
+                  <option value="">{t("hero.chooseCar")}</option>
+                  {siteConfig.fleet.cars.map((c: Car) => <option key={c.id} value={c.id}>{c.name} - {formatPrice(c.price, currency)} {t("common.perDay")}</option>)}
+                </select>
+              </div>
+            </div>
+            <button type="button" onClick={handleMainCta} className="mt-5 flex w-full items-center justify-center gap-2 rounded-full bg-[#1a1a1a] py-4 text-[15px] font-bold text-white hover:bg-black transition">
+              {canOpenWa ? t("hero.waCta") : t("hero.cta")}
+              {days > 0 ? ` • ${tn("common.days", days)}` : ""} <span className="inline-block ms-1 rtl:rotate-180">→</span>
+            </button>
+            <p className="mt-2 text-center text-[11px] text-zinc-500">
+              {[
+                siteConfig.booking.advancePaymentDh !== null ? t("fleet.advance", { amount: formatPrice(siteConfig.booking.advancePaymentDh, BASE_CURRENCY) }) : null,
+                siteConfig.booking.freeCancellation ? t("fleet.freeCancel") : null,
+                t("hero.reply")
+              ].filter(Boolean).join(" • ")}
+            </p>
+            <a href={directLink} target="_blank" rel="noopener noreferrer" className="mt-3 block text-center text-[12px] text-zinc-600 underline hover:text-zinc-900">{t("hero.direct")}</a>
+          </div>
+        </div>
+      </div>
+    </section>
+  )
+}
+
+====== FILE: ./src/components/how-it-works.tsx ======
+
+"use client"
+import { translations } from "@/data/translations"
+import { useLang } from "@/lib/lang"
+
+export default function HowItWorks() {
+  const lang = useLang();
+  const how = translations[lang].how || translations.fr.how;
+
+  return (
+    <section id="how-it-works" className="py-16 bg-white">
+      <div className="max-w-[1280px] mx-auto px-6">
+        <h2 className="text-[32px] font-black text-zinc-900">{how.title}</h2>
+        <p className="text-zinc-500 mt-2">{how.subtitle}</p>
+        <div className="grid md:grid-cols-3 gap-6 mt-8">
+          {how.steps.map((step, i) => (
+            <div key={i} className="bg-[#faf9f6] border border-zinc-100 rounded-2xl p-6">
+              <div className="w-10 h-10 rounded-full bg-zinc-900 text-white flex items-center justify-center font-bold text-[14px] mb-4">
+                {i + 1}
+              </div>
+              <h3 className="font-bold text-[15px] text-zinc-900">{step.title}</h3>
+              <p className="text-[13px] text-zinc-500 mt-2">{step.desc}</p>
+            </div>
+          ))}
+        </div>
+      </div>
+    </section>
+  )
+}
+
+====== FILE: ./src/components/lang-switcher.tsx ======
+
+"use client"
+import { useState, useRef, useEffect } from "react"
+import { LANGS, type Lang } from "@/data/translations"
+import { useLang, setLang as saveLang, useT } from "@/lib/lang"
+
+const LABELS: Record<Lang, string> = {
+  fr: "FR",
+  en: "EN",
+  ar: "العربية",
+}
+
+export default function LangSwitcher() {
+  const currentLang = useLang()
+  const { t } = useT()
+  const [open, setOpen] = useState(false)
+  const ref = useRef<HTMLDivElement>(null)
+
+  useEffect(() => {
+    if (!open) return
+    const close = (e: PointerEvent) => {
+      if (!ref.current?.contains(e.target as Node)) setOpen(false)
+    }
+    const onKey = (e: KeyboardEvent) => {
+      if (e.key === "Escape") setOpen(false)
+    }
+    document.addEventListener("pointerdown", close)
+    document.addEventListener("keydown", onKey)
+    return () => {
+      document.removeEventListener("pointerdown", close)
+      document.removeEventListener("keydown", onKey)
+    }
+  }, [open])
+
+  const changeLang = (newLang: Lang) => {
+    saveLang(newLang)
+    setOpen(false)
+  }
+
+  return (
+    <div ref={ref} className="relative">
+      <button
+        type="button"
+        aria-label={`${t("lang.label")} ${LABELS[currentLang]}`}
+        aria-expanded={open}
+        onClick={() => setOpen(!open)}
+        className="flex h-9 items-center gap-1 rounded-full border border-zinc-200 bg-white px-3 text-[12px] font-bold text-zinc-700 hover:border-zinc-300"
+      >
+        <span>{LABELS[currentLang]}</span>
+        <span className="text-[10px] opacity-60">{open ? "▲" : "▼"}</span>
+      </button>
+
+      {open && (
+        <div className="absolute right-0 top-[44px] z-40 min-w-[140px] overflow-hidden rounded-2xl border border-zinc-200 bg-white shadow-xl rtl:left-0 rtl:right-auto">
+          {LANGS.map((l: Lang) => (
+            <button
+              key={l}
+              type="button"
+              onClick={() => changeLang(l)}
+              aria-current={currentLang === l}
+              className={`flex w-full items-center justify-between px-4 py-3 text-start text-[13px] transition hover:bg-zinc-50 ${
+                currentLang === l ? "bg-zinc-900 text-white hover:bg-zinc-900" : "text-zinc-700"
+              }`}
+            >
+              <span className="font-medium">{t(`lang.${l}`)}</span>
+              {currentLang === l && <span className="text-[12px]">✓</span>}
+            </button>
+          ))}
+        </div>
+      )}
+    </div>
+  )
+}
+
+====== FILE: ./src/components/meeting-image.tsx ======
+
+"use client"
+import Image from "next/image"
+import { siteConfig } from "@/data/config"
+import { useT } from "@/lib/lang"
+
+export default function MeetingImage() {
+  const { t } = useT()
+  return (
+    <Image 
+      src={siteConfig.contact.meetingPointPhoto} 
+      alt={t("meeting.imageAlt")} 
+      fill 
+      sizes="(max-width: 768px) 100vw, 50vw" 
+      className="object-cover"
+    />
+  )
+}
+
+====== FILE: ./src/components/reviews.tsx ======
+
+import { showReviews, siteConfig } from "@/data/config"
+import T from "@/components/t"
+
+export default function Reviews() {
+  if (!showReviews) return null
+  return (
+    <section id="reviews" className="py-16 bg-[#faf9f6]">
+      <div className="max-w-[1280px] mx-auto px-6">
+        <h2 className="text-[32px] font-black text-zinc-900"><T k="reviews.title" /></h2>
+        <p className="text-zinc-500 mt-2"><T k="reviews.subtitle" /></p>
+
+        <div className="grid md:grid-cols-3 gap-6 mt-8">
+          {siteConfig.reviews.items.map((r, i) => (
+            <div key={r.name + i} className="bg-white border border-zinc-200 rounded-2xl p-5">
+              <p className="font-bold text-[14px] text-zinc-900">{r.name}</p>
+              <p lang={r.lang} dir="auto" className="text-[13px] text-zinc-600 mt-3 leading-relaxed">&quot;{r.text}&quot;</p>
+              <p aria-label={`${r.rating} / 5`} className="text-[11px] text-amber-500 mt-3">
+                  {"★".repeat(Math.max(1, Math.min(5, Math.round(r.rating || 5))))}
+              </p>
+            </div>
+          ))}
+        </div>
+
+        {siteConfig.reviews.googleMapsLink && siteConfig.reviews.googleMapsLink !== "CHANGE-ME" && (
+          <div className="text-center mt-8">
+            <a href={siteConfig.reviews.googleMapsLink} target="_blank" rel="noopener noreferrer" className="inline-flex items-center gap-2 rounded-full border border-zinc-300 bg-white px-6 py-3 text-[13px] font-bold text-zinc-800 hover:border-zinc-900 transition">
+              <T k="reviews.cta" /> <span className="inline-block rtl:rotate-180">→</span>
+            </a>
+          </div>
+        )}
+      </div>
+    </section>
+  )
+}
+
+====== FILE: ./src/components/shell.tsx ======
+
+import type { ReactNode } from "react"
+import Header from "@/components/header"
+import Footer from "@/components/footer"
+import WhatsAppBar from "@/components/whatsapp-bar"
+
+export default function Shell({ children }: { children: ReactNode }) {
+  return (
+    <div id="top" className="min-h-screen bg-[#faf9f6] pb-[84px] md:pb-0">
+      <Header />
+      <main>{children}</main>
+      <Footer />
+      <WhatsAppBar />
+    </div>
+  )
+}
+
+====== FILE: ./src/components/t.tsx ======
+
+"use client"
+import { useT } from "@/lib/lang"
+import type { Vars } from "@/lib/i18n"
+
+
+export default function T({ k, vars }: { k: string; vars?: Vars }) {
+  const { t } = useT()
+  return <>{t(k, vars)}</>
+}
+
+
+====== FILE: ./src/components/trust-strip.tsx ======
+
+import { siteConfig } from "@/data/config"
+import T from "@/components/t"
+
+export default function TrustStrip() {
+  return (
+    <section className="bg-white border-y border-zinc-100 py-6">
+      <div className="max-w-[1280px] mx-auto px-6 grid md:grid-cols-4 gap-4 text-[12px]">
+        <div className="flex gap-3 items-start">
+          <span className="text-[20px]" aria-hidden="true">📄</span>
+          <div>
+            <p className="font-bold text-zinc-900"><T k="trust.contractTitle" /></p>
+            <p className="text-zinc-500"><T k="trust.contractText" /></p>
+          </div>
+        </div>
+        <div className="flex gap-3 items-start">
+          <span className="text-[20px]" aria-hidden="true">💰</span>
+          <div>
+            <p className="font-bold text-zinc-900"><T k="trust.priceTitle" /></p>
+            <p className="text-zinc-500"><T k="trust.priceText" /></p>
+          </div>
+        </div>
+        <div className="flex gap-3 items-start">
+          <span className="text-[20px]" aria-hidden="true">📍</span>
+          <div>
+            <p className="font-bold text-zinc-900"><T k="trust.meetingTitle" /></p>
+            <a href={siteConfig.contact.googleMapsLink} target="_blank" rel="noopener noreferrer" className="text-blue-600 underline">
+              <T k="trust.meetingLink" />
+            </a>
+          </div>
+        </div>
+        <div className="flex gap-3 items-start">
+          <span className="text-[20px]" aria-hidden="true">💬</span>
+          <div>
+            <p className="font-bold text-zinc-900"><T k="trust.whatsappTitle" /></p>
+            <p className="text-zinc-500"><T k="trust.whatsappText" /></p>
+          </div>
+        </div>
+      </div>
+    </section>
+  )
+}
+
+====== FILE: ./src/components/wa-cta.tsx ======
+
+"use client"
+import { getWhatsAppLink } from "@/lib/whatsapp"
+import { useT } from "@/lib/lang"
+import { useBooking } from "@/context/BookingContext"
+import { fmtDate } from "@/lib/dates"
+import { LOCALES } from "@/lib/i18n"
+import { siteConfig, type LocationId } from "@/data/config"
+
+type WaCtaProps = {
+  source: string
+  className?: string
+  defaultLocation?: LocationId
+  car?: string
+  pricePerDay?: number
+  children?: React.ReactNode
+}
+
+export default function WaCta({ source, className = "", defaultLocation, car, pricePerDay, children }: WaCtaProps) {
+  const { lang, t, tn } = useT()
+  const { location, pickup, ret, days } = useBooking()
+  const locale = LOCALES[lang]
+
+  const effectiveLocation =
+    defaultLocation && siteConfig.booking.locations.includes(defaultLocation)
+      ? defaultLocation
+      : location
+
+  const link = getWhatsAppLink(lang, {
+    car,
+    pricePerDay,
+    total: days > 0 && pricePerDay ? pricePerDay * days : undefined,
+    pickupDate: pickup ? fmtDate(pickup, locale) : undefined,
+    returnDate: ret ? fmtDate(ret, locale) : undefined,
+    location: t(`locations.${effectiveLocation}`),
+    days: days > 0 ? tn("common.days", days) : undefined,
+    ref: source,
+  })
+
+  return (
+    <a href={link} target="_blank" rel="noopener noreferrer" className={className}>
+      {children ?? t("landing.book")}
+    </a>
+  )
+}
+
+====== FILE: ./src/components/whatsapp-bar.tsx ======
+
+"use client"
+import { getWhatsAppLink } from "@/lib/whatsapp"
+import { useT } from "@/lib/lang"
+import { useBooking } from "@/context/BookingContext"
+import { fmtDate } from "@/lib/dates"
+import { LOCALES } from "@/lib/i18n"
+
+export default function WhatsAppBar() {
+  const { lang, t, tn } = useT()
+  const { location, pickup, ret, days } = useBooking()
+  const link = getWhatsAppLink(lang, {
+    pickupDate: pickup ? fmtDate(pickup, LOCALES[lang]) : undefined,
+    returnDate: ret ? fmtDate(ret, LOCALES[lang]) : undefined,
+    location: t(`locations.${location}`),
+    days: days ? tn("common.days", days) : undefined,
+    ref: "sticky-bar",
+  })
+
+  return (
+    <div className="fixed inset-x-0 bottom-0 z-50 flex items-center justify-between gap-3 border-t border-zinc-200 bg-white p-3 pb-[calc(0.75rem+env(safe-area-inset-bottom))] md:hidden">
+      <div>
+        <p className="text-[14px] font-bold">{t("bar.title")}</p>
+        <p className="text-[12px] text-zinc-600">{t("bar.text")}</p>
+      </div>
+      <a
+        href={link}
+        target="_blank"
+        rel="noopener noreferrer"
+        className="rounded-full bg-[#15803d] px-5 py-3 text-[14px] font-bold text-white transition hover:bg-[#166534]"
+      >
+        {t("common.whatsapp")}
+      </a>
+    </div>
+  )
+}
+
+====== FILE: ./src/context/BookingContext.tsx ======
+
+"use client"
+import { createContext, useCallback, useContext, useMemo, useState, type ReactNode } from "react"
+import { siteConfig, type LocationId } from "@/data/config"
+import { daysBetween } from "@/lib/dates"
+import { DEFAULT_CURRENCY, type Currency } from "@/lib/currency"
+
+export type { Currency }
+
+interface BookingState {
+  location: LocationId
+  pickup: string
+  ret: string
+  days: number
+  currency: Currency
+  setLocation: (v: LocationId) => void
+  setPickup: (v: string) => void
+  setReturn: (v: string) => void
+  setCurrency: (c: Currency) => void
+}
+
+const BookingContext = createContext<BookingState | undefined>(undefined)
+
+export function BookingProvider({ children }: { children: ReactNode }) {
+  const [location, setLocation] = useState<LocationId>(siteConfig.booking.locations[0] as LocationId)
+  const [pickup, setPickupState] = useState("")
+  const [ret, setRetState] = useState("")
+  const [currency, setCurrency] = useState<Currency>(DEFAULT_CURRENCY)
+
+  const setPickup = useCallback((v: string) => {
+    setPickupState(v)
+    setRetState((r) => (r && r < v ? "" : r))
+  }, [])
+
+  const setReturn = useCallback((v: string) => {
+    if (v && pickup && v < pickup) {
+      setRetState("")
+      return
+    }
+    setRetState(v)
+  }, [pickup])
+
+  const days = useMemo(() => {
+    if (!pickup || !ret || ret < pickup) return 0
+    return daysBetween(pickup, ret)
+  }, [pickup, ret])
+
+  const value = useMemo(
+    () => ({
+      location,
+      pickup,
+      ret,
+      days,
+      currency,
+      setLocation,
+      setPickup,
+      setReturn,
+      setCurrency,
+    }),
+    [location, pickup, ret, days, currency, setLocation, setPickup, setReturn, setCurrency]
+  )
+
+  return <BookingContext.Provider value={value}>{children}</BookingContext.Provider>
+}
+
+export function useBooking() {
+  const ctx = useContext(BookingContext)
+  if (!ctx) throw new Error("useBooking must be used inside BookingProvider")
+  return ctx
+}
+
+====== FILE: ./src/data/config.ts ======
+
+export type CarCategory = "eco" | "auto" | "suv" | "family";
+export type FuelType = "diesel" | "petrol";
+export type LocationId = string;
+export type PaymentMethod = "cash" | "transfer" | "card";
+
+export interface Car {
+  id: string;
+  name: string;
+  category: CarCategory;
+  popular: boolean;
+  price: number;
+  image: string;
+  seats: number;
+  auto: boolean;
+  fuel: FuelType;
+}
+
+export interface DeliveryAirport {
+  name: string;
+  nameAr: string;
+  code: string;
+}
+
+export type Review = { name: string; lang: string; rating: number; text: string };
+
+export const CITY_HAS_AIRPORT = true;
+export const AIRPORT_SERVICE = true;
+
+const seo = {
+  city: "Casablanca",
+  region: "Casablanca-Settat",
+  areas: ["Casablanca", "Mohammedia", "Dar Bouazza"],
+  airport: CITY_HAS_AIRPORT ? "Casablanca Mohammed V" : "",
+  airportCode: CITY_HAS_AIRPORT ? "CMN" : "",
+  meetingPoint: CITY_HAS_AIRPORT ? "Parking P2" : "",
+  deliveryAirports: (CITY_HAS_AIRPORT ? [] : [
+    { name: "Casablanca Mohammed V", nameAr: "الدار البيضاء محمد الخامس", code: "CMN" },
+    { name: "Marrakech Menara", nameAr: "مراكش المنارة", code: "RAK" },
+    { name: "Agadir Al Massira", nameAr: "أكادير المسيرة", code: "AGA" },
+  ]) as DeliveryAirport[],
+  cityAr: "الدار البيضاء",
+  airportAr: CITY_HAS_AIRPORT ? "محمد الخامس" : "",
+  meetingPointAr: CITY_HAS_AIRPORT ? "الموقف P2" : "",
+  areasAr: ["الدار البيضاء", "المحمدية", "دار بوعزة"],
+  keywords: ["location voiture", "car rental", "rent a car"],
+};
+
+export const airportLocationId = (a: DeliveryAirport): LocationId => `airport-${a.code.trim().toLowerCase()}`;
+
+const hasNearbyAreas = seo.areas.some((a) => a.trim().toLowerCase() !== seo.city.trim().toLowerCase());
+
+const airportLocations: LocationId[] = !AIRPORT_SERVICE
+  ? []
+  : CITY_HAS_AIRPORT || seo.deliveryAirports.length === 0
+    ? ["airport"]
+    : seo.deliveryAirports.map(airportLocationId);
+
+const locations: LocationId[] = [
+  ...airportLocations,
+  "city",
+  ...(hasNearbyAreas ? (["nearby"] as LocationId[]) : []),
+];
+
+const cars: Car[] = [
+  { id: "logan", name: "Dacia Logan", category: "eco", popular: true, price: 250, image: "/fleet/logan.webp", seats: 5, auto: false, fuel: "diesel" },
+  { id: "clio", name: "Renault Clio 5", category: "eco", popular: false, price: 300, image: "/fleet/clio5.webp", seats: 5, auto: false, fuel: "petrol" },
+  { id: "sandero", name: "Dacia Sandero Stepway", category: "eco", popular: false, price: 270, image: "/fleet/sandero.webp", seats: 5, auto: false, fuel: "petrol" },
+  { id: "duster", name: "Dacia Duster", category: "suv", popular: true, price: 400, image: "/fleet/duster.webp", seats: 5, auto: false, fuel: "diesel" },
+  { id: "golf8", name: "VW Golf 8", category: "auto", popular: false, price: 500, image: "/fleet/golf8.webp", seats: 5, auto: true, fuel: "diesel" },
+  { id: "jogger", name: "Dacia Jogger", category: "family", popular: true, price: 450, image: "/fleet/jogger.webp", seats: 7, auto: false, fuel: "diesel" },
+];
+
+export const siteConfig = {
+  website: {
+    url: "https://agadir-rent-demo.pages.dev",
+    contentUpdated: "2026-10-14",
+  },
+  verified: {
+    businessInfo: false,
+    legalClaims: false,
+    fleet: false,
+    seo: false,
+  },
+  brand: { name: "YOUR", nameLight: "BRAND", logo: "/logo.png" },
+  seo,
+  contact: {
+    whatsapp: "212600000000",
+    phone: "+212600000000",
+    phoneDisplay: "+212 6 00 00 00 00",
+    address: "CHANGE-ME",
+    geo: { lat: 0, lng: 0 },
+    sameAs: [] as string[],
+    googleMapsLink: "https://CHANGE-ME",
+    meetingPointPhoto: "/meeting-point.webp",
+  },
+  booking: {
+    cityHasAirport: CITY_HAS_AIRPORT,
+    airportService: AIRPORT_SERVICE,
+    locations,
+    withCaution: true,
+    advancePaymentDh: null as number | null,
+    freeCancellation: false,
+    unlimitedKm: false,
+    freeAirportDelivery: false,
+    freeCityDelivery: false,
+    insuranceIncluded: false,
+  },
+  currency: { base: "MAD", foreign: "EUR", rate: 0.092 },
+  business: {
+    openingHours: "00:00-23:59",
+    timezone: "Africa/Casablanca",
+    payments: ["cash", "transfer"] as PaymentMethod[],
+    acceptForeignCash: true,
+    addressCountry: "MA",
+    legal: {
+      ice: "",
+      rc: "",
+    },
+  },
+  tracking: {
+    gaId: "",
+    metaPixelId: "",
+  },
+  hero: { image: "/hero.webp" },
+  fleet: { cars },
+  reviews: { googleMapsLink: "", items: [] as Review[] },
+};
+
+export const BRAND = `${siteConfig.brand.name} ${siteConfig.brand.nameLight}`.trim();
+
+const b = siteConfig.booking;
+
+export const showReviews = siteConfig.reviews.items.length > 0;
+
+export const faqKeys = [
+  ...(b.airportService ? [b.freeAirportDelivery ? "delivery" : "deliveryPaid"] : []),
+  b.withCaution ? "depositYes" : "deposit",
+  ...(b.unlimitedKm ? ["km"] : []),
+  "booking",
+  "docs",
+] as const;
+
+export const SITE_URL = siteConfig.website.url.replace(/\/+$/, "");
+
+export const IS_PRODUCTION_SITE =
+  process.env.NODE_ENV === "production" &&
+  process.env.ALLOW_PLACEHOLDER_CONFIG !== "true";
+
+const PAYMENT_SCHEMA_LABEL: Record<PaymentMethod, string> = {
+  cash: "Cash",
+  transfer: "Bank Transfer",
+  card: "Credit Card",
+};
+export const paymentAcceptedSchema = siteConfig.business.payments.map((m) => PAYMENT_SCHEMA_LABEL[m]).join(", ");
+
+const deliveryNamesFr = (() => {
+  const n = siteConfig.seo.deliveryAirports.map((a) => a.name);
+  return n.length < 2 ? n.join("") : `${n.slice(0, -1).join(", ")} et ${n[n.length - 1]}`;
+})();
+
+const airportSeoPart = (() => {
+  const free = b.freeAirportDelivery ? "gratuite " : "";
+  if (b.cityHasAirport) return `livraison ${free}à l'aéroport ${siteConfig.seo.airport}`;
+  if (siteConfig.seo.deliveryAirports.length > 0) return `livraison ${free}aux aéroports de ${deliveryNamesFr}`;
+  return `livraison ${free}à l'aéroport`;
+})();
+
+export const seoDescription = [
+  `Location voiture ${siteConfig.seo.city}${b.withCaution ? "" : " sans caution"}`,
+  b.airportService
+    ? airportSeoPart
+    : `livraison ${b.freeCityDelivery ? "gratuite " : ""}à ${siteConfig.seo.city}`,
+  b.unlimitedKm ? "kilométrage illimité" : null,
+  "réservation rapide sur WhatsApp",
+].filter(Boolean).join(", ") + ".";
+
+====== FILE: ./src/data/guard.ts ======
+
+import { existsSync, statSync } from "node:fs"
+import { join } from "node:path"
+import { IS_PRODUCTION_SITE, SITE_URL, seoDescription, siteConfig as c } from "@/data/config"
+import { landings } from "@/data/landings"
+import { translations as T } from "@/data/translations"
+
+const PLACEHOLDER = /CHANGE-ME|YOUR\s*BRAND/i
+const DEMO_URL_PATTERN = /agadir-rent-demo|example\.com|localhost/i
+const DEMO_WHATSAPP = "212600000000"
+const DEMO_PHONE = "+212600000000"
+const HOURS_REGEX = /^([01]\d|2[0-3]):[0-5]\d-([01]\d|2[0-3]):[0-5]\d$/
+
+function isHttps(u: string): boolean {
+  if (!/^https:\/\/\S+$/i.test(u)) return false
+  try {
+    const parsed = new URL(u)
+    return parsed.protocol === "https:" && Boolean(parsed.hostname)
+  } catch {
+    return false
+  }
+}
+
+function isValidISODate(s: string): boolean {
+  if (!/^\d{4}-\d{2}-\d{2}$/.test(s)) return false
+  const d = new Date(`${s}T00:00:00Z`)
+  return !isNaN(d.getTime()) && d.toISOString().slice(0, 10) === s
+}
+
+function isExistingFile(publicPath: string): boolean {
+  if (!publicPath || !publicPath.startsWith("/") || publicPath.length < 2) return false
+  const full = join(process.cwd(), "public", publicPath)
+  try {
+    return existsSync(full) && statSync(full).isFile()
+  } catch {
+    return false
+  }
+}
+
+function scanPlaceholders(v: unknown, path: string, out: string[]) {
+  if (typeof v === "string") {
+    if (PLACEHOLDER.test(v)) out.push(`${path} (valeur de démonstration)`)
+  } else if (Array.isArray(v)) {
+    v.forEach((x, i) => scanPlaceholders(x, `${path}[${i}]`, out))
+  } else if (v && typeof v === "object") {
+    Object.entries(v).forEach(([k, x]) => scanPlaceholders(x, `${path}.${k}`, out))
+  }
+}
+
+function compareShape(a: unknown, b: unknown, path: string, out: string[]) {
+  if (path === "common.days") return
+  if (Array.isArray(a) || Array.isArray(b)) {
+    if (!Array.isArray(a) || !Array.isArray(b) || a.length !== b.length) out.push(`translations ${path} (longueur différente)`)
+    else a.forEach((x, i) => compareShape(x, b[i], `${path}[${i}]`, out))
+    return
+  }
+  if (a && b && typeof a === "object" && typeof b === "object") {
+    const ra = a as Record<string, unknown>
+    const rb = b as Record<string, unknown>
+    new Set([...Object.keys(ra), ...Object.keys(rb)]).forEach((k) => {
+      const p = path ? `${path}.${k}` : k
+      if (!(k in ra) || !(k in rb)) out.push(`translations ${p} (clé absente)`)
+      else compareShape(ra[k], rb[k], p, out)
+    })
+    return
+  }
+}
+
+function scanBrokenText(v: unknown, path: string, out: string[]) {
+  if (typeof v === "string") {
+    if (/undefined|NaN|\[object/.test(v)) out.push(`translations ${path} (texte cassé)`)
+  } else if (Array.isArray(v)) {
+    v.forEach((x, i) => scanBrokenText(x, `${path}[${i}]`, out))
+  } else if (v && typeof v === "object") {
+    Object.entries(v).forEach(([k, x]) => scanBrokenText(x, path ? `${path}.${k}` : k, out))
+  }
+}
+
+const norm = (v: string) => v.normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLowerCase().replace(/\s+/g, " ").trim()
+
+function airportClaimPatterns(city: string, cityAr: string): string[] {
+  const c = norm(city)
+  return [
+    `aeroport ${c}`, `${c} aeroport`, `aeroport de ${c}`, `aeroport d'${c}`, `aeroport d’${c}`,
+    `airport ${c}`, `${c} airport`, `airport of ${c}`,
+    `مطار ${norm(cityAr)}`,
+  ]
+}
+
+function hasAirportClaim(text: string, patterns: string[]): boolean {
+  const n = norm(text)
+  return patterns.some((p) => n.includes(p))
+}
+
+function collectAirportClaims(v: unknown, path: string, patterns: string[], out: string[]) {
+  if (path.endsWith(".landings.airport")) return
+  if (typeof v === "string") {
+    if (hasAirportClaim(v, patterns)) out.push(`${path} : affirme que la ville a un aéroport alors que CITY_HAS_AIRPORT = false`)
+  } else if (Array.isArray(v)) {
+    v.forEach((x, i) => collectAirportClaims(x, `${path}[${i}]`, patterns, out))
+  } else if (v && typeof v === "object") {
+    Object.entries(v).forEach(([k, x]) => collectAirportClaims(x, `${path}.${k}`, patterns, out))
+  }
+}
+
+export function assertProductionReady() {
+  if (!IS_PRODUCTION_SITE) return
+
+  const errors: string[] = []
+
+  if (!c.verified.businessInfo) errors.push("verified.businessInfo = false")
+  if (!c.verified.legalClaims) errors.push("verified.legalClaims = false")
+  if (!c.verified.fleet) errors.push("verified.fleet = false (Flotte et images non vérifiées)")
+  if (!c.verified.seo) errors.push("verified.seo = false (ville, aéroport, point de rencontre, zones)")
+
+  if (!isValidISODate(c.website.contentUpdated)) {
+    errors.push("website.contentUpdated invalide (doit être une vraie date YYYY-MM-DD)")
+  }
+
+  if (!c.brand.name.trim()) errors.push("brand.name est vide")
+  if (!c.contact.address.trim()) errors.push("contact.address est vide")
+
+  if (!Number.isFinite(c.contact.geo.lat) || c.contact.geo.lat < -90 || c.contact.geo.lat > 90 ||
+      !Number.isFinite(c.contact.geo.lng) || c.contact.geo.lng < -180 || c.contact.geo.lng > 180 ||
+      (c.contact.geo.lat === 0 && c.contact.geo.lng === 0)) {
+    errors.push("contact.geo (Coordonnées GPS hors limites ou non configurées)")
+  }
+
+  if (!isHttps(c.contact.googleMapsLink)) errors.push("contact.googleMapsLink doit être une URL https:// valide")
+  if (c.reviews.googleMapsLink && !isHttps(c.reviews.googleMapsLink)) errors.push("reviews.googleMapsLink invalide")
+  c.contact.sameAs.forEach((u) => { if (!isHttps(u)) errors.push(`sameAs invalide : ${u}`) })
+
+  const adv = c.booking.advancePaymentDh
+  if (adv !== null && (!Number.isFinite(adv) || adv <= 0)) errors.push("booking.advancePaymentDh doit être un nombre fini > 0")
+
+  c.reviews.items.forEach((r, idx) => {
+    if (!r.name.trim() || !r.text.trim()) errors.push(`avis #${idx + 1} : nom ou texte vide`)
+    if (!Number.isInteger(r.rating) || r.rating < 1 || r.rating > 5) errors.push(`rating invalide pour l'avis de ${r.name || idx + 1}`)
+  })
+
+  scanPlaceholders(c, "siteConfig", errors)
+  if (PLACEHOLDER.test(`${c.brand.name} ${c.brand.nameLight}`)) errors.push("brand.name contient des valeurs démo")
+  if (!isHttps(SITE_URL) || !/^https:\/\/[^/]+\.[a-z]{2,}$/i.test(SITE_URL)) errors.push("website.url invalide")
+  if (DEMO_URL_PATTERN.test(SITE_URL)) errors.push("website.url contient encore l'URL de démonstration")
+
+  if (c.tracking.gaId && !/^G-[A-Z0-9]+$/i.test(c.tracking.gaId.trim())) {
+    errors.push("tracking.gaId invalide (format attendu : G-XXXXXXXXXX)")
+  }
+  if (c.tracking.metaPixelId && !/^\d{10,20}$/.test(c.tracking.metaPixelId.trim())) {
+    errors.push("tracking.metaPixelId invalide (doit contenir uniquement des chiffres)")
+  }
+
+  if (c.contact.whatsapp === DEMO_WHATSAPP || !/^212[5-7]\d{8}$/.test(c.contact.whatsapp)) errors.push("contact.whatsapp invalide")
+  if (c.contact.phone === DEMO_PHONE || !/^\+212[5-7]\d{8}$/.test(c.contact.phone)) errors.push("contact.phone invalide")
+  if (c.contact.phone.replace(/\D/g, "") !== c.contact.phoneDisplay.replace(/\D/g, "")) errors.push("contact.phone et phoneDisplay ne correspondent pas")
+
+  if (!HOURS_REGEX.test(c.business.openingHours)) errors.push("business.openingHours format invalide (HH:MM-HH:MM)")
+  try { new Intl.DateTimeFormat("en-US", { timeZone: c.business.timezone }) } catch { errors.push("business.timezone invalide") }
+  if (c.business.payments.length === 0) errors.push("business.payments doit contenir au moins un moyen de paiement")
+
+  if (!Number.isFinite(c.currency.rate) || c.currency.rate <= 0) errors.push("currency.rate doit être un nombre fini > 0")
+
+  if (c.fleet.cars.length === 0) errors.push("fleet.cars est vide")
+  const ids = c.fleet.cars.map((x) => x.id.trim())
+  if (ids.some((x) => !x) || new Set(ids).size !== ids.length) errors.push("fleet.cars contient des IDs vides ou en double")
+
+  c.fleet.cars.forEach((car) => {
+    if (!car.name.trim()) errors.push(`Nom vide pour le véhicule ${car.id}`)
+    if (!Number.isFinite(car.price) || car.price <= 0) errors.push(`Prix invalide pour le véhicule ${car.id}`)
+    if (!Number.isInteger(car.seats) || car.seats <= 0) errors.push(`Nombre de places invalide pour ${car.id}`)
+  })
+
+  const s = c.seo
+  const slugifyArea = (v: string) => v.normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/^-+|-+$/g, "")
+  if (s.areas.some((a) => !slugifyArea(a))) {
+    errors.push("seo.areas doit contenir des noms avec des caractères latins valides pour les URLs (ex: Mohammedia)")
+  }
+  if (!s.city.trim() || !s.cityAr.trim() || !s.region.trim()) {
+    errors.push("seo.city, cityAr et region sont obligatoires")
+  }
+  if (s.areas.length === 0 || s.areas.some((a) => !a.trim()) || s.areasAr.some((a) => !a.trim())) {
+    errors.push("seo.areas et areasAr ne peuvent pas être vides")
+  }
+  if (s.areas.length !== s.areasAr.length) {
+    errors.push("seo.areas et areasAr n'ont pas la même taille")
+  }
+
+  if (c.booking.cityHasAirport && !c.booking.airportService) {
+    errors.push("CITY_HAS_AIRPORT = true exige AIRPORT_SERVICE = true")
+  }
+  if (c.booking.cityHasAirport &&
+      (!s.airport.trim() || !s.airportCode.trim() || !s.meetingPoint.trim() || !s.airportAr.trim() || !s.meetingPointAr.trim())) {
+    errors.push("seo.airport, airportCode et meetingPoint (FR/AR) sont obligatoires quand CITY_HAS_AIRPORT = true")
+  }
+  if (!c.booking.cityHasAirport) {
+    const claims = airportClaimPatterns(s.city, s.cityAr)
+    const publicTexts: [string, string][] = [["seoDescription", seoDescription], ["seo.keywords", s.keywords.join(" ")]]
+    landings.forEach((l) => publicTexts.push([`landing ${l.id}`, `${l.slug.replace(/-/g, " ")} ${l.title} ${l.description}`]))
+    publicTexts.forEach(([where, text]) => { if (hasAirportClaim(text, claims)) errors.push(`${where} : affirme que la ville a un aéroport alors que CITY_HAS_AIRPORT = false`) })
+    collectAirportClaims(T, "translations", claims, errors)
+
+    if (c.booking.airportService) {
+      const list = s.deliveryAirports
+      if (list.length === 0) {
+        errors.push("seo.deliveryAirports est obligatoire quand CITY_HAS_AIRPORT = false et AIRPORT_SERVICE = true (ex: CMN, RAK, AGA)")
+      }
+      list.forEach((a, i) => {
+        if (!a.name.trim() || !a.nameAr.trim() || !a.code.trim()) {
+          errors.push(`seo.deliveryAirports[${i}] : name, nameAr et code sont obligatoires`)
+        }
+        if (a.name.trim() && norm(a.name).includes(norm(s.city))) {
+          errors.push(`seo.deliveryAirports[${i}] (${a.name}) : contient le nom de la ville alors que CITY_HAS_AIRPORT = false`)
+        }
+        if (a.nameAr.trim() && norm(a.nameAr).includes(norm(s.cityAr))) {
+          errors.push(`seo.deliveryAirports[${i}] (${a.nameAr}) : contient le nom de la ville alors que CITY_HAS_AIRPORT = false`)
+        }
+      })
+      const codes = list.map((a) => a.code.trim().toUpperCase())
+      if (new Set(codes).size !== codes.length) errors.push("seo.deliveryAirports : codes d'aéroport en double")
+      if (codes.some((x) => !/^[A-Z]{3}$/.test(x))) errors.push("seo.deliveryAirports : code IATA invalide (3 lettres, ex: CMN)")
+    }
+  }
+
+  if (T.fr && T.en && T.ar) {
+    compareShape(T.fr, T.en, "", errors)
+    compareShape(T.fr, T.ar, "", errors)
+    scanBrokenText(T, "", errors)
+  }
+
+  const slugs = landings.map((l) => l.slug)
+  if (slugs.length === 0 || slugs.some((x) => !x) || new Set(slugs).size !== slugs.length) {
+    errors.push("landings : aucune page générée, ou slug vide / en double")
+  }
+
+  if (process.env.NEXT_PHASE === "phase-production-build") {
+    const files = [
+      c.hero.image,
+      c.brand.logo,
+      ...(c.booking.airportService ? [c.contact.meetingPointPhoto] : []),
+      "/og-hero.jpg",
+      ...c.fleet.cars.map((x) => x.image)
+    ]
+    Array.from(new Set(files)).forEach((f) => {
+      if (!isExistingFile(f)) errors.push(`fichier manquant ou invalide : public${f}`)
+    })
+  }
+
+  if (errors.length) {
+    throw new Error(`\n🚨 [Build Guard] Build de production refusé. Erreurs:\n- ${errors.join("\n- ")}\n`)
+  }
+}
+
+====== FILE: ./src/data/landings.ts ======
+
+import { siteConfig } from "@/data/config"
+import { DEFAULT_LANG } from "@/data/translations"
+import { tr } from "@/lib/i18n"
+
+export type LandingId = "airport" | "airportDelivery" | "deposit" | "nearby"
+export type Landing = { id: LandingId; slug: string; title: string; description: string }
+
+const slugify = (v: string) =>
+  v.normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/^-+|-+$/g, "")
+
+export function buildLandings(): Landing[] {
+  const { city, areas } = siteConfig.seo
+  const t = (k: string) => tr(DEFAULT_LANG, k)
+  const nearby = areas.filter((a) => a.trim().toLowerCase() !== city.trim().toLowerCase())
+  const prefix = slugify(t("seo.locationVoiture"))
+  const citySlug = slugify(city)
+
+  const all: Landing[] = []
+
+  const { cityHasAirport, airportService, unlimitedKm } = siteConfig.booking
+
+  if (cityHasAirport) {
+    all.push({
+      id: "airport",
+      slug: `${prefix}-${slugify(t("seo.slugAirport"))}-${citySlug}`,
+      title: t("landings.airport.metaTitle"),
+      description: `${t("landings.airport.metaDescription")}${unlimitedKm ? " " + t("landings.airport.metaKm") : ""}`,
+    })
+  } else if (airportService) {
+    all.push({
+      id: "airportDelivery",
+      slug: `${prefix}-${citySlug}-${slugify(t("seo.slugAirportDelivery"))}`,
+      title: t("landings.airportDelivery.metaTitle"),
+      description: `${t("landings.airportDelivery.metaDescription")}${unlimitedKm ? " " + t("landings.airportDelivery.metaKm") : ""}`,
+    })
+  }
+
+  if (!siteConfig.booking.withCaution) {
+    all.push({
+      id: "deposit",
+      slug: `${prefix}-${slugify(t("seo.slugDeposit"))}-${citySlug}`,
+      title: t("landings.deposit.metaTitle"),
+      description: t("landings.deposit.metaDescription"),
+    })
+  }
+
+  // Toujours générer "nearby" s'il y a des zones voisines OU si aucune autre landing n'est active
+  // (évite un tableau vide dans generateStaticParams avec output: "export").
+  if (nearby.length > 0 || all.length === 0) {
+    const targetSlug = slugify(nearby[0] || city)
+    all.push({
+      id: "nearby",
+      slug: `${prefix}-${targetSlug}`,
+      title: t("landings.nearby.metaTitle"),
+      description: t("landings.nearby.metaDescription"),
+    })
+  }
+
+  return all
+}
+
+export const landings = buildLandings()
+
+====== FILE: ./src/data/translations.ts ======
+
+import { airportLocationId, siteConfig } from "./config"
+import { BASE_CURRENCY, FOREIGN_CURRENCY, FOREIGN_SYMBOL } from "@/lib/currency"
+
+// CITY_HAS_AIRPORT : la ville a SON aéroport -> on peut l'affirmer (badge, titres, SEO).
+// AIRPORT_SERVICE  : on livre / on a un point de rencontre dans un aéroport (le sien ou un voisin)
+//                    -> les SERVICES "livraison aéroport" s'affichent toujours.
+// HAS_DEL          : pas d'aéroport dans la ville, mais des aéroports de livraison précis
+//                    (seo.deliveryAirports) -> ils sont nommés partout (lieux, rendez-vous, landing, FAQ, SEO).
+const CITY_HAS_AIRPORT = siteConfig.booking.cityHasAirport
+const AIRPORT_SERVICE = siteConfig.booking.airportService
+
+const { city, airport, airportCode, meetingPoint, areas, cityAr, airportAr, meetingPointAr, areasAr, deliveryAirports: DEL } = siteConfig.seo
+
+const sameStr = (a: string, b: string) => a.trim().toLowerCase() === b.trim().toLowerCase()
+
+const CITY = city
+// Détails d'aéroport : renseignés UNIQUEMENT si la ville a son propre aéroport (sinon vides).
+const AIRPORT = airport
+const AIRPORT_CODE = airportCode
+const MEETING_POINT = meetingPoint
+const NEARBY = areas.filter((a) => !sameStr(a, city))
+const NEARBY_LIST = NEARBY.length ? NEARBY : [city]
+const NEARBY_FIRST = NEARBY_LIST[0]
+const NEARBY_SLASH = NEARBY_LIST.join(" / ")
+const NEARBY_COMMA = NEARBY_LIST.join(", ")
+const NEARBY_FR = NEARBY_LIST.join(" et ")
+const NEARBY_EN = NEARBY_LIST.join(" and ")
+const elide = (w: string) => (/^[aeiouhàâäéèêëîïôöùûü]/i.test(w) ? "d'" : "de ");
+const DE = elide(city)
+const DE_AIRPORT = elide(AIRPORT)
+
+// --- Aéroports de livraison (ville sans aéroport) ---
+const HAS_DEL = !CITY_HAS_AIRPORT && AIRPORT_SERVICE && DEL.length > 0
+const joinList = (items: string[], and: string, sep = ", ") =>
+  items.length < 2 ? items.join("") : `${items.slice(0, -1).join(sep)}${and}${items[items.length - 1]}`
+const DEL_FR = joinList(DEL.map((a) => a.name), " et ")
+const DEL_EN = joinList(DEL.map((a) => a.name), " and ")
+const DEL_AR = joinList(DEL.map((a) => a.nameAr), " و", "، ")
+const DEL_CODES = DEL.map((a) => a.code).join(" / ")
+const CODES_SFX = HAS_DEL ? ` ${DEL_CODES}` : ""
+
+// Libellés des lieux de livraison (un par aéroport de livraison)
+const DEL_LOC_FR: Record<string, string> = Object.fromEntries(DEL.map((a) => [airportLocationId(a), `Aéroport ${a.name} (${a.code})`]))
+const DEL_LOC_EN: Record<string, string> = Object.fromEntries(DEL.map((a) => [airportLocationId(a), `${a.name} Airport (${a.code})`]))
+const DEL_LOC_AR: Record<string, string> = Object.fromEntries(DEL.map((a) => [airportLocationId(a), `مطار ${a.nameAr} (${a.code})`]))
+
+// Formulations réutilisées dans les textes de service
+const TO_AP_FR = CITY_HAS_AIRPORT ? `à l'aéroport ${elide(city)}${city}` : HAS_DEL ? `aux aéroports de ${DEL_FR}` : "à l'aéroport"
+const AP_EN = CITY_HAS_AIRPORT ? `${city} airport` : HAS_DEL ? `${DEL_EN} airports` : "the airport"
+const AP_AR = CITY_HAS_AIRPORT ? `مطار ${cityAr}` : HAS_DEL ? `مطارات ${DEL_AR}` : "المطار"
+
+const CITY_AR = cityAr
+const AIRPORT_AR = airportAr
+const AIRPORT_FULL_AR = CITY_HAS_AIRPORT ? `${cityAr} ${airportAr}` : ""
+const MEETING_POINT_AR = meetingPointAr
+const filteredAr = areasAr.filter((a) => !sameStr(a, cityAr))
+const NEARBY_LIST_AR = filteredAr.length ? filteredAr : [cityAr]
+const NEARBY_FIRST_AR = NEARBY_LIST_AR[0]
+const NEARBY_SLASH_AR = NEARBY_LIST_AR.join(" / ")
+const NEARBY_COMMA_AR = NEARBY_LIST_AR.join("، ")
+
+const lamPrep = (n: string) => "ل" + (n.startsWith("ال") ? n.slice(1) : n);
+const NEARBY_AND_AR_LAM = NEARBY_LIST_AR.map(lamPrep).join(" و");
+
+export type Lang = "fr" | "en" | "ar"
+export const LANGS: Lang[] = ["fr", "en", "ar"]
+export const DEFAULT_LANG: Lang = "fr"
+
+const fr = {
+  seo: { locationVoiture: "Location voiture", slugAirport: "aeroport", slugAirportDelivery: "livraison-aeroport", slugDeposit: "sans-caution" },
+  lang: { label: "Langue", fr: "Français", en: "English", ar: "العربية" },
+  common: {
+    whatsapp: "WhatsApp",
+    call: "Appeler",
+    perDay: "/ jour",
+    close: "Fermer",
+    menu: "Menu",
+    showEur: `Voir les prix en ${FOREIGN_SYMBOL}`,
+    showMad: `Voir les prix en ${BASE_CURRENCY}`,
+    days: { one: "{n} jour", other: "{n} jours" } as Record<string, string>,
+  },
+  nav: { fleet: "Nos voitures", conditions: "Conditions", how: "Comment ça marche", reviews: "Avis", faq: "FAQ" },
+  hero: {
+    airportBadge: CITY_HAS_AIRPORT ? `Aéroport ${AIRPORT_CODE}` : `Livraison aéroport${CODES_SFX}`,
+    priceBadge: "Dès {price} / jour",
+    title: "Location voiture",
+    titleAccent: CITY_HAS_AIRPORT ? `${CITY} Aéroport.` : `${CITY}.`,
+    description: AIRPORT_SERVICE
+      ? `Réservation simple sur WhatsApp, prix annoncés à l'avance et livraison ${TO_AP_FR}.`
+      : `Prix annoncés à l'avance, livraison à ${CITY} et réservation simple sur WhatsApp.`,
+    imageAlt: CITY_HAS_AIRPORT ? `Location voiture aéroport ${AIRPORT}` : `Location voiture ${CITY}`,
+    features: { noDeposit: "Sans caution", unlimitedKm: "Km illimité", freeAirport: "Livraison aéroport gratuite" },
+    location: "Lieu",
+    pickup: "Départ",
+    return: "Retour",
+    pickupPlaceholder: "Date départ",
+    returnPlaceholder: "Date retour",
+    pickFirst: "Choisissez d'abord le départ",
+    carOptional: "Voiture (optionnel)",
+    chooseCar: "Choisir une voiture",
+    cta: "Voir les voitures disponibles",
+    waCta: "Vérifier sur WhatsApp",
+    direct: "Ou demander directement sur WhatsApp",
+    reply: "Disponibilité confirmée sur WhatsApp",
+  },
+  calendar: { prev: "Mois précédent", next: "Mois suivant", weekdays: "L,M,M,J,V,S,D" },
+  locations: {
+    airport: CITY_HAS_AIRPORT ? `Aéroport ${CITY} (${AIRPORT_CODE})` : `Livraison aéroport`,
+    city: `${CITY} Ville`,
+    nearby: `${NEARBY_SLASH}`,
+    ...DEL_LOC_FR,
+  } as Record<string, string>,
+  trust: {
+    contractTitle: "Contrat + photos WhatsApp",
+    contractText: "État des lieux avant/après",
+    priceTitle: "Prix annoncés à l'avance",
+    priceText: "Prix final confirmé avant la réservation",
+    meetingTitle: AIRPORT_SERVICE ? "Point de rencontre Aéroport" : "Lieu de livraison exact",
+    meetingLink: "Voir sur Google Maps",
+    whatsappTitle: "Réservation par WhatsApp",
+    whatsappText: "Envoyez votre demande, nous répondons dès que possible",
+  },
+  fleet: {
+    title: "Notre flotte",
+    subtitle: AIRPORT_SERVICE ? "Des voitures entretenues, prêtes à récupérer à l'aéroport." : "Des voitures entretenues, prêtes à récupérer.",
+    categories: { all: "Tous", eco: "Économique", auto: "Automatique", suv: "SUV & 4x4", family: "Familial" },
+    popular: "POPULAIRE",
+    seats: "{n} pl",
+    auto: "Auto",
+    manual: "Manuelle",
+    diesel: "Diesel",
+    petrol: "Essence",
+    advance: "Acompte : {amount}",
+    freeCancel: "Annulation gratuite",
+    book: "Réserver",
+    note: `Conversion en ${FOREIGN_SYMBOL} indicative. Prix final confirmé sur WhatsApp.`,
+  },
+  conditions: {
+    title: "Ce qui est inclus. Ce qui ne l'est pas.",
+    included: {
+      title: "✅ Inclus",
+      items: [
+        siteConfig.booking.insuranceIncluded ? "Assurance incluse (au contrat)" : "Assurance de base (franchise applicable)",
+        siteConfig.booking.unlimitedKm ? "Kilométrage illimité" : "Kilométrage selon contrat",
+        ...(AIRPORT_SERVICE ? [siteConfig.booking.freeAirportDelivery ? (CITY_HAS_AIRPORT ? `Livraison Aéroport ${CITY} gratuite` : `Livraison aéroport${CODES_SFX} gratuite`) : (CITY_HAS_AIRPORT ? `Livraison Aéroport (frais applicables)` : `Livraison aéroport${CODES_SFX} (frais applicables)`)] : []),
+        siteConfig.booking.freeCityDelivery ? `Livraison ${CITY} ville gratuite` : `Livraison ville (frais applicables)`,
+        "Assistance par WhatsApp en cas de problème",
+        "Contrat + photos état des lieux",
+      ],
+    },
+    excluded: {
+      title: "❌ Non inclus / Exclusions",
+      items: [
+        "Pneus, vitres, sous-châssis (sauf option)",
+        "Pistes non goudronnées",
+        "Carburant (plein/plein)",
+        "Amendes (PV) et lavage excessif",
+      ],
+    },
+    documents: {
+      title: "📋 Documents",
+      items: [
+        "Passeport (ou CIN Maroc)",
+        "Permis de conduire valide",
+        "Conditions d'âge selon le contrat",
+        ...(AIRPORT_SERVICE ? ["N° de vol demandé pour la livraison à l'aéroport"] : []),
+      ],
+    },
+    payment: {
+      title: "💳 Paiement",
+      items: [
+        ...(siteConfig.business.payments.includes("cash") ? [siteConfig.business.acceptForeignCash ? `Espèces ${BASE_CURRENCY} / ${FOREIGN_CURRENCY}` : `Espèces ${BASE_CURRENCY} uniquement`] : []),
+        ...(siteConfig.business.payments.includes("transfer") ? ["Virement bancaire"] : []),
+        ...(siteConfig.business.payments.includes("card") ? ["Carte bancaire (TPE)"] : []),
+        "Reçu remis pour chaque paiement",
+      ],
+      noDeposit: "Sans caution : aucune carte bancaire bloquée",
+      deposit: "Caution demandée (montant indiqué avant la réservation)",
+    },
+  },
+  how: {
+    title: "Comment ça marche",
+    subtitle: "3 étapes simples",
+    steps: [
+      { title: "Choisissez vos dates", desc: AIRPORT_SERVICE ? "Dates et lieu - Aéroport ou ville" : "Dates et lieu de livraison" },
+      { title: "Recevez la confirmation", desc: AIRPORT_SERVICE ? "Sur WhatsApp, avec la photo du point de rencontre" : "Sur WhatsApp, avec le point de livraison exact" },
+      { title: "Récupérez votre voiture", desc: "Contrat + photos état des lieux, puis vous partez" },
+    ],
+  },
+  meeting: {
+    title: CITY_HAS_AIRPORT ? `Point de rendez-vous Aéroport ${AIRPORT_CODE}` : HAS_DEL ? `Rendez-vous à l'aéroport : ${DEL_CODES}` : `Rendez-vous à l'aéroport`,
+    text: CITY_HAS_AIRPORT
+      ? `Rendez-vous : ${MEETING_POINT} (Meeting Point). Livraison directe à l'aéroport ${AIRPORT}. Les horaires de livraison sont confirmés sur WhatsApp.`
+      : HAS_DEL
+        ? `Livraison directe aux aéroports de ${DEL_FR}. Le point de rencontre exact et les horaires de livraison sont confirmés sur WhatsApp.`
+        : `Livraison directe à l'aéroport. Le point de rencontre exact et les horaires de livraison sont confirmés sur WhatsApp.`,
+    item1: CITY_HAS_AIRPORT ? `📍 ${MEETING_POINT} • Aéroport ${AIRPORT}` : HAS_DEL ? `📍 Point de rencontre dans chaque aéroport (précisé sur WhatsApp)` : `📍 Point de rencontre à l'aéroport (précisé sur WhatsApp)`,
+    item2Free: "🚗 Livraison gratuite à l'aéroport",
+    item2Paid: "🚗 Livraison à l'aéroport (frais selon lieu)",
+    item3: "📸 Photo du point exact envoyée sur WhatsApp",
+    airportsTitle: "Aéroports desservis",
+    imageAlt: CITY_HAS_AIRPORT ? `Point de rendez-vous ${MEETING_POINT}, aéroport ${DE_AIRPORT}${AIRPORT}` : `Point de rendez-vous à l'aéroport`,
+  },
+  reviews: { title: "Avis de nos clients", subtitle: "Quelques retours de clients, publiés tels quels.", cta: "Voir tous les avis sur Google" },
+  faq: {
+    title: "Questions fréquentes",
+    subtitle: "Tout ce que vous devez savoir avant de réserver",
+    delivery: {
+      q: "La livraison à l'aéroport est-elle gratuite ?",
+      a: CITY_HAS_AIRPORT
+        ? `Oui, la livraison à l'aéroport est gratuite. Rendez-vous : ${MEETING_POINT} à votre arrivée.`
+        : HAS_DEL
+          ? `Oui, la livraison aux aéroports de ${DEL_FR} est gratuite. Le point de rencontre vous est confirmé sur WhatsApp.`
+          : "Oui, la livraison à l'aéroport est gratuite. Le point de rencontre vous est confirmé sur WhatsApp.",
+    },
+    deliveryPaid: {
+      q: "Y a-t-il des frais de livraison à l'aéroport ?",
+      a: HAS_DEL
+        ? `Oui, des frais de livraison s'appliquent (aéroports de ${DEL_FR}). Leur montant, selon l'aéroport, vous est confirmé sur WhatsApp avant la réservation.`
+        : "Oui, des frais de livraison s'appliquent. Leur montant vous est confirmé sur WhatsApp avant la réservation.",
+    },
+    deposit: { q: "Faut-il verser une caution ?", a: "Non, aucune carte bancaire n'est bloquée. Vous signez un contrat, nous faisons des photos avant/après et nous vérifions votre pièce d'identité." },
+    depositYes: { q: "Faut-il verser une caution ?", a: "Oui, une caution est demandée. Son montant vous est indiqué avant la réservation." },
+    km: { q: "Kilométrage illimité ?", a: "Oui, partout au Maroc sauf pistes non goudronnées." },
+    booking: { q: "Comment se passe la réservation ?", a: "Choisissez vos dates et envoyez votre demande sur WhatsApp. La disponibilité et le prix final vous sont confirmés avant toute réservation." },
+    docs: { q: "Quels documents faut-il ?", a: AIRPORT_SERVICE ? "Passeport + permis valide + n° de vol si livraison à l'aéroport." : "Passeport et permis de conduire valide." },
+  },
+  footer: {
+    description: CITY_HAS_AIRPORT
+      ? `Location de voiture à l'aéroport ${DE}${CITY}. Contrat écrit, photos de l'état des lieux et assistance par WhatsApp.`
+      : AIRPORT_SERVICE
+        ? `Location de voiture à ${CITY} avec livraison ${TO_AP_FR}. Contrat écrit, photos de l'état des lieux et assistance par WhatsApp.`
+        : `Location de voiture à ${CITY}. Contrat écrit, photos de l'état des lieux et assistance par WhatsApp.`,
+    navTitle: "Navigation",
+    infoTitle: "Infos pratiques",
+    contactTitle: "Contact",
+    seeMap: "Voir sur Maps",
+    legalNotice: "Aucun paiement en ligne ni carte bancaire requise sur ce site. Vos données de réservation sont transmises uniquement via WhatsApp (Loi 09-08).",
+    rights: CITY_HAS_AIRPORT
+      ? `© {year} {brand} - Tous droits réservés - Location voiture ${CITY} Aéroport`
+      : `© {year} {brand} - Tous droits réservés - Location voiture ${CITY}`,
+  },
+  bar: { title: "Besoin d'une voiture ?", text: "Réponse rapide sur WhatsApp" },
+  landing: { carsTitle: "Nos voitures", book: "Réserver sur WhatsApp", seeFleet: "Voir la flotte" },
+  landings: {
+    airport: {
+      footerLabel: `Aéroport ${CITY}`,
+      metaTitle: `Location voiture Aéroport ${AIRPORT} (${AIRPORT_CODE})`,
+      metaDescription: `Récupérez votre voiture de location à l'aéroport ${DE_AIRPORT}${AIRPORT}. Réservation sur WhatsApp.`,
+      metaKm: "Kilométrage illimité.",
+      h1: `Location de voiture à l'aéroport ${DE_AIRPORT}${AIRPORT}`,
+      intro: `Vous atterrissez à ${AIRPORT} (${AIRPORT_CODE}) ? Nous vous retrouvons à l'aéroport avec votre voiture, le contrat et les photos de l'état des lieux. Indiquez simplement votre numéro de vol sur WhatsApp.`,
+      points: [`Point de rencontre à l'aéroport ${AIRPORT_CODE}`, "Indiquez votre numéro de vol sur WhatsApp", ...(siteConfig.booking.unlimitedKm ? ["Kilométrage illimité"] : []), "Réservation et confirmation par WhatsApp"],
+    },
+    airportDelivery: {
+      footerLabel: "Livraison aéroport",
+      metaTitle: `Location voiture ${CITY} avec livraison ${TO_AP_FR}`,
+      metaDescription: `Louez votre voiture à ${CITY} et recevez-la ${TO_AP_FR}. Réservation sur WhatsApp.`,
+      metaKm: "Kilométrage illimité.",
+      h1: `Location de voiture ${CITY} avec livraison ${TO_AP_FR}`,
+      intro: `Vous arrivez en avion ? Nous vous livrons votre voiture ${TO_AP_FR}, avec le contrat et les photos de l'état des lieux. Indiquez simplement l'aéroport et votre numéro de vol sur WhatsApp.`,
+      points: [
+        ...(HAS_DEL ? DEL.map((a) => `Livraison à l'aéroport ${a.name} (${a.code})`) : ["Livraison à l'aéroport"]),
+        "Indiquez l'aéroport et votre numéro de vol sur WhatsApp",
+        ...(siteConfig.booking.unlimitedKm ? ["Kilométrage illimité"] : []),
+        "Réservation et confirmation par WhatsApp",
+      ],
+    },
+    deposit: {
+      footerLabel: "Sans caution",
+      metaTitle: `Location voiture sans caution à ${CITY}`,
+      metaDescription: `Louez une voiture à ${CITY} sans blocage de carte bancaire. Prix annoncés à l'avance, contrat et photos avant/après.`,
+      h1: `Location de voiture sans caution à ${CITY}`,
+      intro: "Pas de blocage sur votre carte bancaire : un contrat clair, un état des lieux en photos avant et après la location, et un prix annoncé dès le départ. Consultez les conditions exactes avant de réserver.",
+      points: ["Pas de carte bancaire bloquée", "Contrat écrit et photos avant/après", "Prix annoncé à l'avance", "Conditions et exclusions détaillées sur le site"],
+    },
+    nearby: {
+      footerLabel: `${NEARBY_FIRST}`,
+      metaTitle: `Location voiture ${NEARBY_COMMA} et ${CITY}`,
+      metaDescription: AIRPORT_SERVICE
+        ? `Voiture de location pour ${NEARBY_FR} et la région autour ${DE}${CITY}. Livraison à l'aéroport ou en ville.`
+        : `Voiture de location pour ${NEARBY_FR} et la région autour ${DE}${CITY}. Livraison en ville et aux alentours.`,
+      h1: `Location de voiture pour ${NEARBY_FR}`,
+      intro: AIRPORT_SERVICE
+        ? `Visites, déplacements et villages aux alentours : une voiture vous permet de vous déplacer à votre rythme. Livraison ${TO_AP_FR}, en ville, ou à ${NEARBY_SLASH}.`
+        : `Visites, déplacements et villages aux alentours : une voiture vous permet de vous déplacer à votre rythme. Livraison à ${CITY} ou à ${NEARBY_SLASH}.`,
+      points: [`Livraison à ${NEARBY_SLASH}`, "Citadines, SUV et véhicules entretenus", "Assistance par WhatsApp"],
+    },
+  },
+  wa: {
+    hello: `Bonjour *{brand}* ! Je souhaite louer une voiture à ${CITY}.`,
+    car: "*Voiture :* {car}",
+    date: "*Date :* {date}",
+    dates: "*Dates :* Du {from} au {to}",
+    duration: "*Durée :* {duration}",
+    place: "*Lieu :* {place}",
+    price: "*Prix :* {price}/jour",
+    total: "*Total : {total} (estimation, prix final confirmé sur WhatsApp)*",
+    ask: "Pouvez-vous confirmer la disponibilité et le prix final ?",
+    thanks: "Merci !",
+  },
+  error: { title: "Une erreur est survenue", text: "Nous sommes désolés, une erreur technique inattendue s'est produite.", retry: "Réessayer", home: "Accueil" },
+  notFound: { title: "Page introuvable", text: "La page que vous recherchez n'existe pas ou a été déplacée.", back: "Retour à l'accueil" }
+}
+
+export type Dict = typeof fr
+
+const en: Dict = {
+  seo: { locationVoiture: "Car rental", slugAirport: "airport", slugAirportDelivery: "airport-delivery", slugDeposit: "no-deposit" },
+  lang: { label: "Language", fr: "Français", en: "English", ar: "العربية" },
+  common: {
+    whatsapp: "WhatsApp",
+    call: "Call",
+    perDay: "/ day",
+    close: "Close",
+    menu: "Menu",
+    showEur: `Show prices in ${FOREIGN_SYMBOL}`,
+    showMad: `Show prices in ${BASE_CURRENCY}`,
+    days: { one: "{n} day", other: "{n} days" },
+  },
+  nav: { fleet: "Our cars", conditions: "Conditions", how: "How it works", reviews: "Reviews", faq: "FAQ" },
+  hero: {
+    airportBadge: CITY_HAS_AIRPORT ? `${AIRPORT_CODE} Airport` : `Airport delivery${CODES_SFX}`,
+    priceBadge: "From {price} / day",
+    title: "Car rental",
+    titleAccent: CITY_HAS_AIRPORT ? `${CITY} Airport.` : `${CITY}.`,
+    description: AIRPORT_SERVICE
+      ? `Prices shown upfront, delivery at ${AP_EN} and easy booking on WhatsApp.`
+      : `Prices shown upfront, delivery in ${CITY} and easy booking on WhatsApp.`,
+    imageAlt: CITY_HAS_AIRPORT ? `Car rental at ${AIRPORT} airport` : `Car rental in ${CITY}`,
+    features: { noDeposit: "No deposit", unlimitedKm: "Unlimited km", freeAirport: "Free airport delivery" },
+    location: "Location",
+    pickup: "Pick-up",
+    return: "Return",
+    pickupPlaceholder: "Pick-up date",
+    returnPlaceholder: "Return date",
+    pickFirst: "Choose the pick-up date first",
+    carOptional: "Car (optional)",
+    chooseCar: "Choose a car",
+    cta: "See available cars",
+    waCta: "Check on WhatsApp",
+    direct: "Or ask directly on WhatsApp",
+    reply: "Availability confirmed on WhatsApp",
+  },
+  calendar: { prev: "Previous month", next: "Next month", weekdays: "M,T,W,T,F,S,S" },
+  locations: {
+    airport: CITY_HAS_AIRPORT ? `${CITY} Airport (${AIRPORT_CODE})` : `Airport delivery`,
+    city: `${CITY} City`,
+    nearby: `${NEARBY_SLASH}`,
+    ...DEL_LOC_EN,
+  } as Record<string, string>,
+  trust: {
+    contractTitle: "Contract + WhatsApp photos",
+    contractText: "Before/after condition report",
+    priceTitle: "Prices shown upfront",
+    priceText: "Final price confirmed before booking",
+    meetingTitle: AIRPORT_SERVICE ? "Airport meeting point" : "Delivery location",
+    meetingLink: "View on Google Maps",
+    whatsappTitle: "Booking by WhatsApp",
+    whatsappText: "Send your request, we reply as soon as possible",
+  },
+  fleet: {
+    title: "Our fleet",
+    subtitle: AIRPORT_SERVICE ? "Well-maintained cars, ready to pick up at the airport." : "Well-maintained cars, ready to pick up.",
+    categories: { all: "All", eco: "Economy", auto: "Automatic", suv: "SUV & 4x4", family: "Family" },
+    popular: "POPULAR",
+    seats: "{n} seats",
+    auto: "Automatic",
+    manual: "Manual",
+    diesel: "Diesel",
+    petrol: "Petrol",
+    advance: "Advance payment: {amount}",
+    freeCancel: "Free cancellation",
+    book: "Book",
+    note: `Conversion in ${FOREIGN_SYMBOL} is indicative. Final price confirmed on WhatsApp.`,
+  },
+  conditions: {
+    title: "What's included. What's not.",
+    included: {
+      title: "✅ Included",
+      items: [
+        siteConfig.booking.insuranceIncluded ? "Insurance included (details in the contract)" : "Basic insurance (excess applies)",
+        siteConfig.booking.unlimitedKm ? "Unlimited mileage" : "Mileage according to contract",
+        ...(AIRPORT_SERVICE ? [siteConfig.booking.freeAirportDelivery ? (CITY_HAS_AIRPORT ? `Free ${CITY} Airport delivery` : `Free airport delivery${CODES_SFX}`) : (CITY_HAS_AIRPORT ? `Delivery to ${CITY} Airport (fees apply)` : `Airport delivery${CODES_SFX} (fees apply)`)] : []),
+        siteConfig.booking.freeCityDelivery ? `Free ${CITY} city delivery` : `City delivery (fees apply)`,
+        "Assistance by WhatsApp if there is a problem",
+        "Contract + condition photos",
+      ],
+    },
+    excluded: {
+      title: "❌ Not included / Exclusions",
+      items: [
+        "Tyres, windows, underbody (unless optional cover)",
+        "Unpaved tracks",
+        "Fuel (full/full)",
+        "Fines and excessive cleaning",
+      ],
+    },
+    documents: {
+      title: "📋 Documents",
+      items: [
+        "Passport (or Moroccan ID card)",
+        "Valid driving licence",
+        "Age conditions according to contract",
+        ...(AIRPORT_SERVICE ? ["Flight number requested for airport delivery"] : []),
+      ],
+    },
+    payment: {
+      title: "💳 Payment",
+      items: [
+        ...(siteConfig.business.payments.includes("cash") ? [siteConfig.business.acceptForeignCash ? `Cash ${BASE_CURRENCY} / ${FOREIGN_CURRENCY}` : `Cash ${BASE_CURRENCY} only`] : []),
+        ...(siteConfig.business.payments.includes("transfer") ? ["Bank Transfer"] : []),
+        ...(siteConfig.business.payments.includes("card") ? ["Credit/Debit Card"] : []),
+        "Receipt given for every payment",
+      ],
+      noDeposit: "No deposit: no bank card is blocked",
+      deposit: "Deposit required (amount shown before booking)",
+    },
+  },
+  how: {
+    title: "How it works",
+    subtitle: "3 simple steps",
+    steps: [
+      { title: "Choose your dates", desc: AIRPORT_SERVICE ? "Dates and place - airport or city" : "Dates and delivery location" },
+      { title: "Get your confirmation", desc: AIRPORT_SERVICE ? "On WhatsApp, with a photo of the meeting point" : "On WhatsApp, with the exact delivery spot" },
+      { title: "Pick up your car", desc: "Contract + condition photos, then you drive away" },
+    ],
+  },
+  meeting: {
+    title: CITY_HAS_AIRPORT ? `${AIRPORT_CODE} airport meeting point` : HAS_DEL ? `Airport meeting points: ${DEL_CODES}` : `Airport meeting point`,
+    text: CITY_HAS_AIRPORT
+      ? `Meet us at ${MEETING_POINT} (Meeting Point). Direct delivery at ${AIRPORT} airport. Delivery times are confirmed on WhatsApp.`
+      : HAS_DEL
+        ? `Direct delivery at ${DEL_EN} airports. The exact meeting point and delivery times are confirmed on WhatsApp.`
+        : `Direct delivery at the airport. The exact meeting point and delivery times are confirmed on WhatsApp.`,
+    item1: CITY_HAS_AIRPORT ? `📍 ${MEETING_POINT} • ${AIRPORT} Airport` : HAS_DEL ? `📍 Meeting point at each airport (confirmed on WhatsApp)` : `📍 Airport meeting point (confirmed on WhatsApp)`,
+    item2Free: "🚗 Free delivery at the airport",
+    item2Paid: "🚗 Airport delivery (fees depending on location)",
+    item3: "📸 Photo of the exact spot sent on WhatsApp",
+    airportsTitle: "Airports we deliver to",
+    imageAlt: CITY_HAS_AIRPORT ? `${MEETING_POINT} meeting point, ${AIRPORT} airport` : `Airport meeting point`,
+  },
+  reviews: { title: "Customer reviews", subtitle: "A few customer comments, shown as written.", cta: "See all reviews on Google" },
+  faq: {
+    title: "Frequently asked questions",
+    subtitle: "Everything you need to know before booking",
+    delivery: {
+      q: "Is airport delivery free?",
+      a: CITY_HAS_AIRPORT
+        ? `Yes, airport delivery is free. Meet us at ${MEETING_POINT} when you land.`
+        : HAS_DEL
+          ? `Yes, delivery at ${DEL_EN} airports is free. The meeting point is confirmed on WhatsApp.`
+          : "Yes, airport delivery is free. The meeting point is confirmed on WhatsApp.",
+    },
+    deliveryPaid: {
+      q: "Is there a delivery fee at the airport?",
+      a: HAS_DEL
+        ? `Yes, a delivery fee applies (${DEL_EN} airports). The amount, depending on the airport, is confirmed on WhatsApp before you book.`
+        : "Yes, a delivery fee applies. The amount is confirmed on WhatsApp before you book.",
+    },
+    deposit: { q: "Do I need to pay a deposit?", a: "No, no bank card is blocked. You sign a contract, we take photos before/after and we check your ID." },
+    depositYes: { q: "Do I need to pay a deposit?", a: "Yes, a deposit is required. The amount is shown to you before booking." },
+    km: { q: "Unlimited mileage?", a: "Yes, anywhere in Morocco except unpaved tracks." },
+    booking: { q: "How does booking work?", a: "Choose your dates and send your request on WhatsApp. Availability and the final price are confirmed to you before any booking." },
+    docs: { q: "Which documents do I need?", a: AIRPORT_SERVICE ? "Passport + valid driving licence + flight number for airport delivery." : "Passport and valid driving licence." },
+  },
+  footer: {
+    description: CITY_HAS_AIRPORT
+      ? `Car rental at ${CITY} airport. Written contract, condition photos and assistance by WhatsApp.`
+      : AIRPORT_SERVICE
+        ? `Car rental in ${CITY} with delivery at ${AP_EN}. Written contract, condition photos and assistance by WhatsApp.`
+        : `Car rental in ${CITY}. Written contract, condition photos and assistance by WhatsApp.`,
+    navTitle: "Navigation",
+    infoTitle: "Useful info",
+    contactTitle: "Contact",
+    seeMap: "View on Maps",
+    legalNotice: "No online payment or credit card required on this website. Your booking details are shared exclusively via WhatsApp (Law 09-08).",
+    rights: CITY_HAS_AIRPORT ? `© {year} {brand} - All rights reserved - Car rental ${CITY} Airport` : `© {year} {brand} - All rights reserved - Car rental ${CITY}`,
+  },
+  bar: { title: "Need a car?", text: "Quick reply on WhatsApp" },
+  landing: { carsTitle: "Our cars", book: "Book on WhatsApp", seeFleet: "See the fleet" },
+  landings: {
+    airport: {
+      footerLabel: `${CITY} Airport`,
+      metaTitle: `Car rental ${AIRPORT} Airport (${AIRPORT_CODE})`,
+      metaDescription: `Pick up your rental car at ${AIRPORT} airport. Booking on WhatsApp.`,
+      metaKm: "Unlimited mileage.",
+      h1: `Car rental at ${AIRPORT} Airport`,
+      intro: `Landing at ${AIRPORT} (${AIRPORT_CODE})? We meet you at the airport with your car, the contract and the condition photos. Just send your flight number on WhatsApp.`,
+      points: [`Meeting point at ${AIRPORT_CODE} airport`, "Send your flight number on WhatsApp", ...(siteConfig.booking.unlimitedKm ? ["Unlimited mileage"] : []), "Booking and confirmation by WhatsApp"],
+    },
+    airportDelivery: {
+      footerLabel: "Airport delivery",
+      metaTitle: `Car rental ${CITY} with delivery at ${AP_EN}`,
+      metaDescription: `Rent your car in ${CITY} and get it delivered at ${AP_EN}. Booking on WhatsApp.`,
+      metaKm: "Unlimited mileage.",
+      h1: `Car rental ${CITY} with delivery at ${AP_EN}`,
+      intro: `Flying in? We deliver your car at ${AP_EN}, with the contract and the condition photos. Just send the airport and your flight number on WhatsApp.`,
+      points: [
+        ...(HAS_DEL ? DEL.map((a) => `Delivery at ${a.name} airport (${a.code})`) : ["Delivery at the airport"]),
+        "Send the airport and your flight number on WhatsApp",
+        ...(siteConfig.booking.unlimitedKm ? ["Unlimited mileage"] : []),
+        "Booking and confirmation by WhatsApp",
+      ],
+    },
+    deposit: {
+      footerLabel: "No deposit",
+      metaTitle: `Car rental with no deposit in ${CITY}`,
+      metaDescription: `Rent a car in ${CITY} with no card hold. Prices shown upfront, contract and before/after photos.`,
+      h1: `Car rental in ${CITY} with no deposit`,
+      intro: "No hold on your bank card: a clear contract, before and after photos of the car, and a price shown upfront. Please read the exact conditions before booking.",
+      points: ["No bank card blocked", "Written contract and before/after photos", "Price shown upfront", "Conditions and exclusions detailed on the site"],
+    },
+    nearby: {
+      footerLabel: `${NEARBY_FIRST}`,
+      metaTitle: `Car rental ${NEARBY_COMMA} and ${CITY}`,
+      metaDescription: AIRPORT_SERVICE
+        ? `Rental car for ${NEARBY_EN} and the area around ${CITY}. Delivery at the airport or in the city.`
+        : `Rental car for ${NEARBY_EN} and the area around ${CITY}. Delivery in the city and nearby areas.`,
+      h1: `Car rental for ${NEARBY_EN}`,
+      intro: AIRPORT_SERVICE
+        ? `Visiting and discovering nearby towns and villages: a car lets you move at your pace. Delivery at ${AP_EN}, in the city, or in ${NEARBY_SLASH}.`
+        : `Visiting and discovering nearby towns and villages: a car lets you move at your pace. Delivery in ${CITY} or in ${NEARBY_SLASH}.`,
+      points: [`Delivery to ${NEARBY_SLASH}`, "City cars, SUVs and maintained vehicles", "Assistance by WhatsApp"],
+    },
+  },
+  wa: {
+    hello: `Hello *{brand}*! I would like to rent a car in ${CITY}.`,
+    car: "*Car:* {car}",
+    date: "*Date:* {date}",
+    dates: "*Dates:* From {from} to {to}",
+    duration: "*Duration:* {duration}",
+    place: "*Location:* {place}",
+    price: "*Price:* {price}/day",
+    total: "*Total: {total} (estimate, final price confirmed on WhatsApp)*",
+    ask: "Can you confirm availability and the final price?",
+    thanks: "Thank you!",
+  },
+  error: { title: "An error occurred", text: "We are sorry, an unexpected technical error has occurred.", retry: "Try again", home: "Home" },
+  notFound: { title: "Page not found", text: "The page you are looking for does not exist or has been moved.", back: "Back to home" }
+}
+
+const ar: Dict = {
+  seo: { locationVoiture: "كراء السيارات", slugAirport: "matar", slugAirportDelivery: "tawsil-matar", slugDeposit: "bidoun-daman" },
+  lang: { label: "اللغة", fr: "Français", en: "English", ar: "العربية" },
+  common: {
+    whatsapp: "واتساب",
+    call: "اتصال",
+    perDay: "/ اليوم",
+    close: "إغلاق",
+    menu: "القائمة",
+    showEur: `عرض الأسعار بـ ${FOREIGN_SYMBOL}`,
+    showMad: `عرض الأسعار بـ ${BASE_CURRENCY}`,
+    days: { one: "يوم واحد", two: "يومان", few: "{n} أيام", other: "{n} يومًا" },
+  },
+  nav: { fleet: "سياراتنا", conditions: "الشروط", how: "كيف تعمل الخدمة", reviews: "آراء الزبناء", faq: "الأسئلة الشائعة" },
+    hero: {
+    airportBadge: CITY_HAS_AIRPORT ? `مطار ${AIRPORT_CODE}` : `التوصيل إلى المطار${CODES_SFX}`,
+    priceBadge: "ابتداءً من {price} / اليوم",
+    title: "كراء السيارات",
+    titleAccent: CITY_HAS_AIRPORT ? `مطار ${CITY_AR}.` : `${CITY_AR}.`,
+    description: AIRPORT_SERVICE
+      ? `أسعار معلنة مسبقًا، تسليم السيارة في ${AP_AR}، وحجز سهل عبر واتساب.`
+      : `أسعار معلنة مسبقًا، تسليم السيارة في ${CITY_AR}، وحجز سهل عبر واتساب.`,
+    imageAlt: CITY_HAS_AIRPORT ? `كراء السيارات في مطار ${AIRPORT_FULL_AR}` : `كراء السيارات في ${CITY_AR}`,
+    features: { noDeposit: "بدون ضمانة", unlimitedKm: "كيلومترات غير محدودة", freeAirport: "تسليم مجاني في المطار" },
+    location: "المكان",
+    pickup: "الاستلام",
+    return: "الإرجاع",
+    pickupPlaceholder: "تاريخ الاستلام",
+    returnPlaceholder: "تاريخ الإرجاع",
+    pickFirst: "اختر تاريخ الاستلام أولًا",
+    carOptional: "السيارة (اختياري)",
+    chooseCar: "اختر سيارة",
+    cta: "عرض السيارات المتوفرة",
+    waCta: "تأكيد عبر واتساب",
+    direct: "أو اطلب مباشرة عبر واتساب",
+    reply: "نؤكد لك التوفر عبر واتساب",
+  },
+  calendar: { prev: "الشهر السابق", next: "الشهر التالي", weekdays: "ن,ث,ر,خ,ج,س,ح" },
+  locations: {
+    airport: CITY_HAS_AIRPORT ? `مطار ${CITY_AR} (${AIRPORT_CODE})` : `التوصيل إلى المطار`,
+    city: `مدينة ${CITY_AR}`,
+    nearby: `${NEARBY_SLASH_AR}`,
+    ...DEL_LOC_AR,
+  } as Record<string, string>,
+  trust: {
+    contractTitle: "عقد + صور عبر واتساب",
+    contractText: "معاينة السيارة قبل وبعد الكراء",
+    priceTitle: "أسعار معلنة مسبقًا",
+    priceText: "الثمن النهائي يتم تأكيده قبل الحجز",
+    meetingTitle: AIRPORT_SERVICE ? "نقطة اللقاء في المطار" : "مكان التسليم",
+    meetingLink: "عرض على Google Maps",
+    whatsappTitle: "الحجز عبر واتساب",
+    whatsappText: "أرسل طلبك وسنجيبك في أقرب وقت",
+  },
+  fleet: {
+    title: "أسطولنا",
+    subtitle: AIRPORT_SERVICE ? "سيارات مصانة، جاهزة للاستلام في المطار." : "سيارات مصانة، جاهزة للاستلام.",
+    categories: { all: "الكل", eco: "اقتصادية", auto: "أوتوماتيك", suv: "SUV و 4x4", family: "عائلية" },
+    popular: "الأكثر طلبًا",
+    seats: "{n} مقاعد",
+    auto: "أوتوماتيك",
+    manual: "عادي",
+    diesel: "ديزل",
+    petrol: "بنزين",
+    advance: "التسبيق: {amount}",
+    freeCancel: "إلغاء مجاني",
+    book: "احجز",
+    note: "التحويل تقريبي. الثمن النهائي مؤكد عبر واتساب.",
+  },
+  conditions: {
+    title: "ما هو مشمول. وما هو غير مشمول.",
+    included: {
+      title: "✅ مشمول",
+      items: [
+        siteConfig.booking.insuranceIncluded ? "التأمين مشمول (التفاصيل في العقد)" : "تأمين أساسي (تُطبق نسبة اقتطاع / Franchise)",
+        siteConfig.booking.unlimitedKm ? "كيلومترات غير محدودة" : "كيلومترات محددة بالعقد",
+        ...(AIRPORT_SERVICE ? [siteConfig.booking.freeAirportDelivery ? (CITY_HAS_AIRPORT ? `التسليم مجاني في مطار ${CITY_AR}` : `التسليم مجاني في المطار${CODES_SFX}`) : (CITY_HAS_AIRPORT ? `التسليم في مطار ${CITY_AR} (رسوم إضافية)` : `التسليم في المطار${CODES_SFX} (رسوم إضافية)`)] : []),
+        siteConfig.booking.freeCityDelivery ? `التسليم مجاني في مدينة ${CITY_AR}` : `التسليم في المدينة (رسوم إضافية)`,
+        "مساعدة عبر واتساب في حالة وجود مشكل",
+        "عقد + صور معاينة السيارة",
+      ],
+    },
+    excluded: {
+      title: "❌ غير مشمول / استثناءات",
+      items: [
+        "العجلات والزجاج وأسفل السيارة (إلا بخيار إضافي)",
+        "المسالك غير المعبدة",
+        "الوقود (خزان ممتلئ عند الاستلام والإرجاع)",
+        "المخالفات والتنظيف المفرط",
+      ],
+    },
+    documents: {
+      title: "📋 الوثائق",
+      items: [
+        "جواز السفر (أو البطاقة الوطنية)",
+        "رخصة سياقة سارية المفعول",
+        "شروط السن حسب العقد",
+        ...(AIRPORT_SERVICE ? ["رقم الرحلة مطلوب للتسليم في المطار"] : []),
+      ],
+    },
+    payment: {
+      title: "💳 الأداء",
+      items: [
+        ...(siteConfig.business.payments.includes("cash") ? [siteConfig.business.acceptForeignCash ? `نقدًا ${BASE_CURRENCY} / ${FOREIGN_CURRENCY}` : `نقدًا ${BASE_CURRENCY} فقط`] : []),
+        ...(siteConfig.business.payments.includes("transfer") ? ["تحويل بنكي"] : []),
+        ...(siteConfig.business.payments.includes("card") ? ["البطاقة البنكية"] : []),
+        "تسليم وصل عن كل أداء",
+      ],
+      noDeposit: "بدون ضمانة: لا يتم حجز أي مبلغ من بطاقتك البنكية",
+      deposit: "ضمانة مطلوبة (يتم إخبارك بالمبلغ قبل الحجز)",
+    },
+  },
+  how: {
+    title: "كيف تعمل الخدمة",
+    subtitle: "3 خطوات بسيطة",
+    steps: [
+      { title: "اختر تواريخك", desc: AIRPORT_SERVICE ? "التواريخ والمكان - المطار أو المدينة" : "التواريخ ومكان التسليم" },
+      { title: "احصل على التأكيد", desc: AIRPORT_SERVICE ? "عبر واتساب، مع صورة نقطة اللقاء" : "عبر واتساب، مع تحديد مكان التسليم بدقة" },
+      { title: "استلم سيارتك", desc: "عقد + صور المعاينة، ثم تنطلق" },
+    ],
+  },
+  meeting: {
+    title: CITY_HAS_AIRPORT ? `نقطة اللقاء في مطار ${AIRPORT_CODE}` : HAS_DEL ? `نقطة اللقاء في المطار: ${DEL_CODES}` : `نقطة اللقاء في المطار`,
+    text: CITY_HAS_AIRPORT
+      ? `نلتقي في ${MEETING_POINT_AR} (نقطة اللقاء). تسليم مباشر في مطار ${AIRPORT_AR}. مواعيد التسليم يتم تأكيدها عبر واتساب.`
+      : HAS_DEL
+        ? `تسليم مباشر في ${AP_AR}. نقطة اللقاء الدقيقة ومواعيد التسليم يتم تأكيدها عبر واتساب.`
+        : `تسليم مباشر في المطار. نقطة اللقاء الدقيقة ومواعيد التسليم يتم تأكيدها عبر واتساب.`,
+    item1: CITY_HAS_AIRPORT ? `📍 ${MEETING_POINT_AR} • مطار ${AIRPORT_FULL_AR}` : HAS_DEL ? `📍 نقطة اللقاء في كل مطار (تُحدَّد عبر واتساب)` : `📍 نقطة اللقاء في المطار (تُحدَّد عبر واتساب)`,
+    item2Free: "🚗 تسليم مجاني في المطار",
+    item2Paid: "🚗 تسليم في المطار (رسوم حسب المكان)",
+    item3: "📸 صورة المكان بالضبط ترسل عبر واتساب",
+    airportsTitle: "المطارات التي نسلّم فيها",
+    imageAlt: CITY_HAS_AIRPORT ? `نقطة اللقاء ${MEETING_POINT_AR}، مطار ${AIRPORT_FULL_AR}` : `نقطة اللقاء في المطار`,
+  },
+  reviews: { title: "آراء زبنائنا", subtitle: "بعض آراء الزبناء كما كتبوها.", cta: "عرض جميع التقييمات على Google" },
+  faq: {
+    title: "الأسئلة الشائعة",
+    subtitle: "كل ما تحتاج معرفته قبل الحجز",
+    delivery: {
+      q: "هل التوصيل إلى المطار مجاني؟",
+      a: CITY_HAS_AIRPORT
+        ? `نعم، التوصيل إلى المطار مجاني. نلتقي بكم في ${MEETING_POINT_AR} عند وصولكم.`
+        : HAS_DEL
+          ? `نعم، التوصيل إلى ${AP_AR} مجاني. يتم تأكيد نقطة اللقاء عبر واتساب.`
+          : "نعم، التوصيل إلى المطار مجاني. يتم تأكيد نقطة اللقاء عبر واتساب.",
+    },
+    deliveryPaid: {
+      q: "هل هناك رسوم للتوصيل إلى المطار؟",
+      a: HAS_DEL
+        ? `نعم، تُطبّق رسوم توصيل (${AP_AR})، ويتم تأكيد مبلغها حسب المطار عبر واتساب قبل الحجز.`
+        : "نعم، تُطبّق رسوم توصيل، ويتم تأكيد مبلغها عبر واتساب قبل الحجز.",
+    },
+    deposit: { q: "هل يجب دفع ضمانة؟", a: "لا، لا يتم حجز أي مبلغ من بطاقتك البنكية. توقع عقدًا، ونأخذ صورًا قبل وبعد الكراء، ونتحقق من وثيقة هويتك." },
+    depositYes: { q: "هل يجب دفع ضمانة؟", a: "نعم، الضمانة مطلوبة. يتم إخبارك بمبلغها قبل الحجز." },
+    km: { q: "هل الكيلومترات غير محدودة؟", a: "نعم، في جميع أنحاء المغرب باستثناء المسالك غير المعبدة." },
+    booking: { q: "كيف يتم الحجز؟", a: "اختر تواريخك وأرسل طلبك عبر واتساب. يتم تأكيد التوفر والثمن النهائي قبل أي حجز." },
+    docs: { q: "ما هي الوثائق المطلوبة؟", a: AIRPORT_SERVICE ? "جواز السفر + رخصة سياقة سارية + رقم الرحلة للتسليم في المطار." : "جواز السفر ورخصة سياقة سارية المفعول." },
+  },
+  footer: {
+    description: CITY_HAS_AIRPORT
+      ? `كراء السيارات في مطار ${CITY_AR}. عقد مكتوب، صور معاينة السيارة، ومساعدة عبر واتساب.`
+      : AIRPORT_SERVICE
+        ? `كراء السيارات في ${CITY_AR} مع التسليم في ${AP_AR}. عقد مكتوب، صور معاينة السيارة، ومساعدة عبر واتساب.`
+        : `كراء السيارات في ${CITY_AR}. عقد مكتوب، صور معاينة السيارة، ومساعدة عبر واتساب.`,
+    navTitle: "التنقل",
+    infoTitle: "معلومات مفيدة",
+    contactTitle: "التواصل",
+    seeMap: "عرض على Maps",
+    legalNotice: "لا يُطلب أي أداء إلكتروني أو بطاقة بنكية عبر الموقع. تُرسل معلومات الحجز حصريًا عبر واتساب لتأكيد طلبكم (القانون 09-08).",
+    rights: CITY_HAS_AIRPORT
+      ? `© {year} {brand} - جميع الحقوق محفوظة - كراء السيارات في مطار ${CITY_AR}`
+      : `© {year} {brand} - جميع الحقوق محفوظة - كراء السيارات في ${CITY_AR}`,
+  },
+  bar: { title: "تحتاج سيارة؟", text: "جواب سريع عبر واتساب" },
+  landing: { carsTitle: "سياراتنا", book: "احجز عبر واتساب", seeFleet: "عرض الأسطول" },
+  landings: {
+    airport: {
+      footerLabel: `مطار ${CITY_AR}`,
+      metaTitle: `كراء السيارات في مطار ${AIRPORT_FULL_AR} (${AIRPORT_CODE})`,
+      metaDescription: `استلم سيارتك في مطار ${AIRPORT_FULL_AR}. الحجز عبر واتساب.`,
+      metaKm: "كيلومترات غير محدودة.",
+      h1: `كراء السيارات في مطار ${AIRPORT_FULL_AR}`,
+      intro: `ستحط الطائرة في ${AIRPORT_FULL_AR} (${AIRPORT_CODE})؟ نلتقي بك في المطار مع سيارتك والعقد وصور معاينة السيارة. فقط أرسل رقم رحلتك عبر واتساب.`,
+      points: [`نقطة اللقاء في مطار ${AIRPORT_CODE}`, "أرسل رقم رحلتك عبر واتساب", ...(siteConfig.booking.unlimitedKm ? ["كيلومترات غير محدودة"] : []), "الحجز والتأكيد عبر واتساب"],
+    },
+    airportDelivery: {
+      footerLabel: "التوصيل إلى المطار",
+      metaTitle: `كراء السيارات في ${CITY_AR} مع التوصيل إلى ${AP_AR}`,
+      metaDescription: `اكترِ سيارتك في ${CITY_AR} واستلمها في ${AP_AR}. الحجز عبر واتساب.`,
+      metaKm: "كيلومترات غير محدودة.",
+      h1: `كراء السيارات في ${CITY_AR} مع التوصيل إلى ${AP_AR}`,
+      intro: `ستصل عبر الطائرة؟ نسلّمك السيارة في ${AP_AR} مع العقد وصور معاينة السيارة. فقط أرسل اسم المطار ورقم رحلتك عبر واتساب.`,
+      points: [
+        ...(HAS_DEL ? DEL.map((a) => `التسليم في مطار ${a.nameAr} (${a.code})`) : ["التسليم في المطار"]),
+        "أرسل اسم المطار ورقم رحلتك عبر واتساب",
+        ...(siteConfig.booking.unlimitedKm ? ["كيلومترات غير محدودة"] : []),
+        "الحجز والتأكيد عبر واتساب",
+      ],
+    },
+    deposit: {
+      footerLabel: "بدون ضمانة",
+      metaTitle: `كراء السيارات في ${CITY_AR} بدون ضمانة`,
+      metaDescription: `اكترِ سيارة في ${CITY_AR} دون حجز مبلغ على البطاقة البنكية. أسعار معلنة مسبقًا، عقد وصور قبل/بعد.`,
+      h1: `كراء السيارات في ${CITY_AR} بدون ضمانة`,
+      intro: "لا يتم حجز أي مبلغ من بطاقتك البنكية: عقد واضح، صور للسيارة قبل وبعد الكراء، وثمن معلن مسبقًا. المرجو قراءة الشروط بدقة قبل الحجز.",
+      points: ["لا يتم حجز البطاقة البنكية", "عقد مكتوب وصور قبل وبعد", "ثمن معلن مسبقًا", "الشروط والاستثناءات مفصلة في الموقع"],
+    },
+    nearby: {
+      footerLabel: `${NEARBY_FIRST_AR}`,
+      metaTitle: `كراء السيارات في ${NEARBY_COMMA_AR} و${CITY_AR}`,
+      metaDescription: AIRPORT_SERVICE
+        ? `سيارة للكراء في نواحي ${CITY_AR}. التسليم في المطار أو في المدينة.`
+        : `سيارة للكراء في نواحي ${CITY_AR}. التسليم في المدينة والنواحي.`,
+      h1: `كراء السيارات ${NEARBY_AND_AR_LAM}`,
+      intro: AIRPORT_SERVICE
+        ? `زيارة واكتشاف المدن والبلدات المجاورة: السيارة تمنحك حرية التنقل على راحتك. التسليم في ${AP_AR} أو في المدينة أو في ${NEARBY_SLASH_AR}.`
+        : `زيارة واكتشاف المدن والبلدات المجاورة: السيارة تمنحك حرية التنقل على راحتك. التسليم في ${CITY_AR} أو في ${NEARBY_SLASH_AR}.`,
+      points: [`التسليم في ${NEARBY_SLASH_AR}`, "سيارات المدينة وSUV مصانة", "مساعدة عبر واتساب"],
+    },
+  },
+  wa: {
+    hello: `مرحبا *{brand}* ! أرغب في كراء سيارة في ${CITY_AR}.`,
+    car: "*السيارة:* {car}",
+    date: "*التاريخ:* {date}",
+    dates: "*التواريخ:* من {from} إلى {to}",
+    duration: "*المدة:* {duration}",
+    place: "*المكان:* {place}",
+    price: "*الثمن:* {price}/اليوم",
+    total: "*المجموع: {total} (تقدير، الثمن النهائي مؤكد عبر واتساب)*",
+    ask: "هل يمكنكم تأكيد التوفر والثمن النهائي؟",
+    thanks: "شكرًا !",
+  },
+  error: { title: "حدث خطأ", text: "نعتذر، حدث خطأ تقني غير متوقع.", retry: "إعادة المحاولة", home: "الرئيسية" },
+  notFound: { title: "الصفحة غير موجودة", text: "الصفحة التي تبحث عنها غير موجودة أو تم نقلها.", back: "العودة للرئيسية" }
+}
+
+export const translations: Record<Lang, Dict> = { fr, en, ar }
+
+====== FILE: ./src/lib/currency.ts ======
+
+import { siteConfig } from "@/data/config"
+
+export type Currency = string;
+
+export const BASE_CURRENCY: Currency = siteConfig.currency.base;
+export const FOREIGN_CURRENCY: Currency = siteConfig.currency.foreign;
+export const DEFAULT_CURRENCY: Currency = BASE_CURRENCY;
+export const BASE_TO_FOREIGN_RATE: number = siteConfig.currency.rate;
+
+const SYMBOLS: Record<string, string> = { EUR: "€", USD: "$", GBP: "£" }
+export const FOREIGN_SYMBOL: string = SYMBOLS[FOREIGN_CURRENCY] ?? FOREIGN_CURRENCY;
+
+export function nextCurrency(c: Currency): Currency {
+  return c === BASE_CURRENCY ? FOREIGN_CURRENCY : BASE_CURRENCY;
+}
+
+export function convertPrice(priceBase: number, currency: Currency): number {
+  if (currency === FOREIGN_CURRENCY) return priceBase * BASE_TO_FOREIGN_RATE;
+  return priceBase;
+}
+
+export function formatPrice(priceBase: number, currency: Currency): string {
+  if (currency === FOREIGN_CURRENCY) {
+    const converted = convertPrice(priceBase, FOREIGN_CURRENCY);
+    return `${converted.toFixed(2)} ${FOREIGN_SYMBOL}`;
+  }
+  return `${priceBase} ${BASE_CURRENCY}`;
+}
+
+export function formatPriceDual(priceBase: number): { base: string; foreign: string } {
+  return {
+    base: formatPrice(priceBase, BASE_CURRENCY),
+    foreign: `~${formatPrice(priceBase, FOREIGN_CURRENCY)}`,
+  }
+}
+
+export function formatTotal(priceBase: number, days: number, currency: Currency): string {
+  return formatPrice(priceBase * days, currency);
+}
+
+====== FILE: ./src/lib/dates.ts ======
+
+const pad = (n: number) => String(n).padStart(2, "0")
+
+export function toISO(d: Date): string {
+  return `${d.getUTCFullYear()}-${pad(d.getUTCMonth() + 1)}-${pad(d.getUTCDate())}`
+}
+
+export function todayInZone(timeZone: string): string {
+  try {
+    const parts = new Intl.DateTimeFormat("en-US", { timeZone, year: "numeric", month: "2-digit", day: "2-digit" }).formatToParts(new Date())
+    const get = (type: string) => parts.find((p) => p.type === type)?.value
+    const y = get("year"), m = get("month"), d = get("day")
+    if (y && m && d) return `${y}-${m}-${d}`
+  } catch (e) {
+    console.warn("Timezone fallback:", e)
+  }
+  return toISO(new Date())
+}
+
+export function fromISO(s: string): Date {
+  const [y, m, d] = s.split("-").map(Number)
+  return new Date(Date.UTC(y, m - 1, d, 0, 0, 0))
+}
+
+export function fmtDate(d: string | Date, locale: string): string {
+  const date = typeof d === "string" ? fromISO(d) : d
+  if (isNaN(date.getTime())) return ""
+  return date.toLocaleDateString(locale, { timeZone: "UTC", day: "2-digit", month: "short", year: "numeric" })
+}
+
+export function daysBetween(a: string, b: string): number {
+  const dateA = fromISO(a).getTime()
+  const dateB = fromISO(b).getTime()
+  if (isNaN(dateA) || isNaN(dateB)) return 0
+  const diff = dateB - dateA
+  return Math.max(1, Math.round(diff / 86400000))
+}
+
+export function addDaysISO(value: string, days: number): string {
+  const date = fromISO(value)
+  date.setUTCDate(date.getUTCDate() + days)
+  return toISO(date)
+}
+
+====== FILE: ./src/lib/i18n.ts ======
+
+import { DEFAULT_LANG, translations, type Lang } from "@/data/translations"
+
+export type Vars = Record<string, string | number>
+
+export const LOCALES: Record<Lang, string> = { fr: "fr-FR", en: "en-GB", ar: "ar-MA" }
+
+function lookup(dict: unknown, path: string): unknown {
+  return path.split(".").reduce<unknown>((o, k) => {
+    if (o && typeof o === "object") return (o as Record<string, unknown>)[k]
+    return undefined
+  }, dict)
+}
+
+function fill(s: string, vars?: Vars): string {
+  if (!vars) return s
+  return s.replace(/\{(\w+)\}/g, (_, n: string) => (n in vars ? String(vars[n]) : `{${n}}`))
+}
+
+export function tr(lang: Lang, path: string, vars?: Vars): string {
+  let v = lookup(translations[lang], path)
+  if (typeof v !== "string") v = lookup(translations[DEFAULT_LANG], path)
+  if (typeof v !== "string") {
+    if (typeof window === "undefined" && process.env.NODE_ENV !== "production") {
+      console.warn(`i18n: missing key "${path}"`)
+    }
+    return path
+  }
+  return fill(v, vars)
+}
+
+function pluralCategory(lang: Lang, n: number): "one" | "two" | "few" | "other" {
+  if (n === 1) return "one"
+  if (lang === "ar") {
+    if (n === 2) return "two"
+    if (n >= 3 && n <= 10) return "few"
+  }
+  return "other"
+}
+
+export function trn(lang: Lang, path: string, n: number): string {
+  let forms = lookup(translations[lang], path)
+  if (!forms || typeof forms !== "object") forms = lookup(translations[DEFAULT_LANG], path)
+  if (!forms || typeof forms !== "object") return path
+  const f = forms as Record<string, string>
+  return fill(f[pluralCategory(lang, n)] ?? f.other ?? path, { n })
+}
+
+====== FILE: ./src/lib/lang.ts ======
+
+"use client"
+import { useSyncExternalStore } from "react"
+import { DEFAULT_LANG, type Lang } from "@/data/translations"
+import { tr, trn } from "./i18n"
+
+let currentLang: Lang = DEFAULT_LANG
+const listeners = new Set<() => void>()
+
+function subscribe(listener: () => void) {
+  listeners.add(listener)
+  return () => listeners.delete(listener)
+}
+
+function getSnapshot(): Lang {
+  return currentLang
+}
+
+function getServerSnapshot(): Lang {
+  return DEFAULT_LANG
+}
+
+if (typeof window !== "undefined") {
+  let stored: Lang | null = null
+  try {
+    stored = localStorage.getItem("lang") as Lang
+  } catch {}
+
+  if (stored === "fr" || stored === "en" || stored === "ar") {
+    currentLang = stored
+  } else {
+    const nav = (navigator.language || "").slice(0, 2)
+    currentLang = nav === "ar" ? "ar" : nav === "fr" ? "fr" : "en"
+  }
+  document.documentElement.lang = currentLang
+  document.documentElement.dir = currentLang === "ar" ? "rtl" : "ltr"
+
+  window.addEventListener("storage", (e) => {
+    if (e.key === "lang" && e.newValue) {
+      const l = e.newValue as Lang
+      if (l === "fr" || l === "en" || l === "ar") {
+        currentLang = l
+        document.documentElement.lang = l
+        document.documentElement.dir = l === "ar" ? "rtl" : "ltr"
+        listeners.forEach((fn) => fn())
+      }
+    }
+  })
+}
+
+export function setLang(lang: Lang) {
+  currentLang = lang
+  if (typeof window !== "undefined") {
+    document.documentElement.lang = lang
+    document.documentElement.dir = lang === "ar" ? "rtl" : "ltr"
+    try {
+      localStorage.setItem("lang", lang)
+    } catch {}
+  }
+  listeners.forEach((fn) => fn())
+}
+
+export function useLang(): Lang {
+  return useSyncExternalStore(subscribe, getSnapshot, getServerSnapshot)
+}
+
+export function useT() {
+  const lang = useLang()
+  return {
+    lang,
+    t: (path: string, vars?: Record<string, string | number>) => tr(lang, path, vars),
+    tn: (path: string, n: number) => trn(lang, path, n)
+  }
+}
+
+====== FILE: ./src/lib/whatsapp.ts ======
+
+import { BRAND, siteConfig } from "@/data/config"
+import { type Lang, DEFAULT_LANG } from "@/data/translations"
+import { tr } from "@/lib/i18n"
+import { BASE_CURRENCY, formatPrice } from "@/lib/currency"
+
+type WhatsAppData = {
+  car?: string
+  pickupDate?: string
+  returnDate?: string
+  location?: string
+  days?: string
+  pricePerDay?: number
+  total?: number
+  ref?: string
+}
+
+function getT(lang: string) {
+  const l = (["fr", "en", "ar"].includes(lang) ? lang : DEFAULT_LANG) as Lang
+  return (k: string, vars?: Record<string, string | number>) => tr(l, k, vars)
+}
+
+export function getWhatsAppMessage(lang: string, data: WhatsAppData): string {
+  const t = getT(lang)
+  const lines: string[] = []
+
+  lines.push(t("wa.hello", { brand: BRAND }))
+  lines.push("")
+  if (data.car) lines.push(t("wa.car", { car: data.car }))
+
+  if (data.pickupDate && data.returnDate) {
+    lines.push(t("wa.dates", { from: data.pickupDate, to: data.returnDate }))
+  } else if (data.pickupDate) {
+    lines.push(t("wa.date", { date: data.pickupDate }))
+  } else if (data.returnDate) {
+    lines.push(t("wa.date", { date: data.returnDate }))
+  }
+
+  if (data.location) lines.push(t("wa.place", { place: data.location }))
+  if (data.days) lines.push(t("wa.duration", { duration: data.days }))
+  if (data.pricePerDay) lines.push(t("wa.price", { price: formatPrice(data.pricePerDay, BASE_CURRENCY) }))
+  if (data.total && data.days) lines.push(t("wa.total", { total: formatPrice(data.total, BASE_CURRENCY) }))
+
+  lines.push("")
+  lines.push(t("wa.ask"))
+  lines.push(t("wa.thanks"))
+  if (data.ref) {
+    lines.push("")
+    lines.push(`_Ref: ${data.ref}_`)
+  }
+  return lines.join("\n")
+}
+
+export function getWhatsAppLink(lang: string, data: WhatsAppData): string {
+  const message = getWhatsAppMessage(lang, data)
+  const phone = siteConfig.contact.whatsapp.replace(/\D/g, "")
+  const safeMessage = Array.from(message).slice(0, 1500).join("")
+
+  return `https://wa.me/${phone}?text=${encodeURIComponent(safeMessage)}`
+}
+
+====== FILE: ./tsconfig.json ======
+
+{
+  "compilerOptions": {
+    "target": "ES2017",
+    "lib": ["dom", "dom.iterable", "esnext"],
+    "allowJs": true,
+    "skipLibCheck": true,
+    "strict": true,
+    "noEmit": true,
+    "esModuleInterop": true,
+    "module": "esnext",
+    "moduleResolution": "bundler",
+    "resolveJsonModule": true,
+    "isolatedModules": true,
+    "jsx": "react-jsx",
+    "incremental": true,
+    "plugins": [
+      {
+        "name": "next"
+      }
+    ],
+    "paths": {
+      "@/*": ["./src/*"]
+    }
+  },
+  "include": [
+    "next-env.d.ts",
+    "**/*.ts",
+    "**/*.tsx",
+    ".next/types/**/*.ts",
+    ".next/dev/types/**/*.ts",
+    "**/*.mts"
+  ],
+  "exclude": ["node_modules"]
+}

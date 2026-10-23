@@ -28,11 +28,11 @@ export function BookingProvider({ children }: { children: ReactNode }) {
 
   const setPickup = useCallback((v: string) => {
     setPickupState(v)
-    setRetState((r) => (r && r <= v ? "" : r))
+    setRetState((r) => (r && r < v ? "" : r))
   }, [])
 
   const setReturn = useCallback((v: string) => {
-    if (v && pickup && v <= pickup) {
+    if (v && pickup && v < pickup) {
       setRetState("")
       return
     }
@@ -40,7 +40,7 @@ export function BookingProvider({ children }: { children: ReactNode }) {
   }, [pickup])
 
   const days = useMemo(() => {
-    if (!pickup || !ret || ret <= pickup) return 0
+    if (!pickup || !ret || ret < pickup) return 0
     return daysBetween(pickup, ret)
   }, [pickup, ret])
 

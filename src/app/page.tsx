@@ -1,3 +1,4 @@
+
 import Shell from "@/components/shell"
 import Hero from "@/components/hero"
 import Fleet from "@/components/fleet"
@@ -15,7 +16,7 @@ export default function Home() {
       <Hero />
       <Fleet />
       <TrustStrip />
-      {siteConfig.booking.hasAirport && <AirportMeeting />}
+      {siteConfig.booking.airportService && <AirportMeeting />}
       <HowItWorks />
       <Conditions />
       <Reviews />

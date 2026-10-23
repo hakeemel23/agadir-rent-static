@@ -1,8 +1,7 @@
 "use client"
 import { useState, useRef, useEffect } from "react"
 import { LANGS, type Lang } from "@/data/translations"
-import { useLang, setLang as saveLang } from "@/lib/lang"
-import { useT } from "@/lib/lang"
+import { useLang, setLang as saveLang, useT } from "@/lib/lang"
 
 const LABELS: Record<Lang, string> = {
   fr: "FR",
@@ -47,7 +46,7 @@ export default function LangSwitcher() {
         className="flex h-9 items-center gap-1 rounded-full border border-zinc-200 bg-white px-3 text-[12px] font-bold text-zinc-700 hover:border-zinc-300"
       >
         <span>{LABELS[currentLang]}</span>
-        <span className="text-[10px] opacity-60">{open? "▲" : "▼"}</span>
+        <span className="text-[10px] opacity-60">{open ? "▲" : "▼"}</span>
       </button>
 
       {open && (
@@ -59,7 +58,7 @@ export default function LangSwitcher() {
               onClick={() => changeLang(l)}
               aria-current={currentLang === l}
               className={`flex w-full items-center justify-between px-4 py-3 text-start text-[13px] transition hover:bg-zinc-50 ${
-                currentLang === l? "bg-zinc-900 text-white hover:bg-zinc-900" : "text-zinc-700"
+                currentLang === l ? "bg-zinc-900 text-white hover:bg-zinc-900" : "text-zinc-700"
               }`}
             >
               <span className="font-medium">{t(`lang.${l}`)}</span>

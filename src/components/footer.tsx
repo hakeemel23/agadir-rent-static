@@ -14,7 +14,7 @@ const NAV: NavLink[] = [
 
 const INFO: NavLink[] = [
   { key: "nav.how", href: "/#how-it-works" },
-  ...(siteConfig.booking.hasAirport ? [{ key: "meeting.title", href: "/#meeting" }] : []),
+  ...(siteConfig.booking.airportService ? [{ key: "meeting.title", href: "/#meeting" }] : []),
   { key: "nav.faq", href: "/#faq" },
 ]
 
@@ -26,6 +26,8 @@ export default function Footer() {
   const brand = `${siteConfig.brand.name} ${siteConfig.brand.nameLight}`.trim()
   const phoneCall = siteConfig.contact.phone;
   const socials = siteConfig.contact.sameAs || []
+  const { ice, rc } = siteConfig.business.legal
+  const legalIds = [ice ? `ICE: ${ice}` : null, rc ? `RC: ${rc}` : null].filter(Boolean).join(" • ")
 
   return (
     <footer className="bg-[#111] text-zinc-400 py-12">
@@ -113,8 +115,10 @@ export default function Footer() {
         </div>
       </div>
 
-      <div className="max-w-[1280px] mx-auto px-6 mt-10 pt-6 border-t border-zinc-800 text-[11px] text-center">
-        <T k="footer.rights" vars={{ year: siteConfig.website.contentUpdated.substring(0, 4), brand }} />
+      <div className="max-w-[1280px] mx-auto px-6 mt-10 pt-6 border-t border-zinc-800 text-[11px] text-center space-y-1.5">
+        <p><T k="footer.legalNotice" /></p>
+        {legalIds && <p className="text-zinc-500">{legalIds}</p>}
+        <p><T k="footer.rights" vars={{ year: new Date().getFullYear(), brand }} /></p>
       </div>
     </footer>
   )

@@ -75,7 +75,7 @@ export default function Fleet() {
                       <span className="text-[20px] font-black leading-none">{formatPrice(car.price, currency)}</span>
                       <span className="mt-1 text-[11px] text-zinc-500">{currency === BASE_CURRENCY ? dual.foreign : `~${dual.base}`} {t("common.perDay")}</span>
                     </div>
-                    {days > 1 && (
+                    {days > 0 && (
                       <div className="text-end">
                         <div className="text-[13px] font-semibold">{formatTotal(car.price, days, currency)}</div>
                         <div className="text-[11px] text-zinc-500">{currency === BASE_CURRENCY ? dualTotal.foreign : `~${dualTotal.base}`} • {tn("common.days", days)}</div>

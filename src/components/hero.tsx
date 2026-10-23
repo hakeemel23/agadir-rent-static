@@ -5,7 +5,7 @@ import { siteConfig, type Car, type LocationId } from "@/data/config"
 import { getWhatsAppLink } from "@/lib/whatsapp"
 import { useBooking } from "@/context/BookingContext"
 import { formatPrice, BASE_CURRENCY } from "@/lib/currency"
-import { addDaysISO, fmtDate, todayInZone } from "@/lib/dates"
+import { fmtDate, todayInZone } from "@/lib/dates"
 import { LOCALES } from "@/lib/i18n"
 import { useT } from "@/lib/lang"
 
@@ -101,18 +101,23 @@ export default function Hero() {
   const { location, setLocation, pickup, setPickup, ret, setReturn, days, currency } = useBooking()
   const { lang, t, tn } = useT()
   const [selectedCar, setSelectedCar] = useState<string>("")
+  const [todayISO, setTodayISO] = useState<string>(() => todayInZone(siteConfig.business.timezone))
   const minPrice = siteConfig.fleet.cars.length > 0 ? Math.min(...siteConfig.fleet.cars.map((c: Car) => c.price)) : 0;
-  const todayISO = todayInZone(siteConfig.business.timezone)
   const locale = LOCALES[lang]
+
+  useEffect(() => {
+    setTodayISO(todayInZone(siteConfig.business.timezone))
+  }, [])
 
   const features = [
     ...(!siteConfig.booking.withCaution ? ["hero.features.noDeposit"] : []),
     ...(siteConfig.booking.unlimitedKm ? ["hero.features.unlimitedKm"] : []),
-    ...(siteConfig.booking.hasAirport && siteConfig.booking.freeAirportDelivery ? ["hero.features.freeAirport"] : []),
+    ...(siteConfig.booking.airportService && siteConfig.booking.freeAirportDelivery ? ["hero.features.freeAirport"] : []),
   ];
 
   const hasDates = !!(pickup && ret)
   const hasCar = !!selectedCar
+  const canOpenWa = hasDates || hasCar
   const carObj = siteConfig.fleet.cars.find((c: Car) => c.id === selectedCar)
 
   const directLink = getWhatsAppLink(lang, {
@@ -123,11 +128,11 @@ export default function Hero() {
     days: days > 0 ? tn("common.days", days) : undefined,
     pricePerDay: carObj?.price,
     total: days > 0 && carObj ? carObj.price * days : undefined,
-    ref: hasDates && hasCar ? "hero-whatsapp-direct" : "hero-search",
+    ref: canOpenWa ? "hero-whatsapp-direct" : "hero-search",
   })
 
   const handleMainCta = () => {
-    if (hasDates && hasCar) {
+    if (canOpenWa) {
       window.open(directLink, "_blank", "noopener,noreferrer")
     } else {
       document.getElementById("fleet")?.scrollIntoView({ behavior: "smooth" })
@@ -143,7 +148,7 @@ export default function Hero() {
       <div className="relative mx-auto max-w-[1280px] px-6 py-8 md:min-h-[640px] md:py-14">
         <div className="md:max-w-[520px]">
           <div className="mb-4 flex flex-wrap gap-2">
-            {siteConfig.booking.hasAirport && (
+            {siteConfig.booking.airportService && (
               <span className="rounded-full border bg-white px-3 py-1 text-[11px]">{t("hero.airportBadge")}</span>
             )}
             <span className="rounded-full border bg-white px-3 py-1 text-[11px] font-bold">{t("hero.priceBadge", { price: formatPrice(minPrice, currency) })}</span>
@@ -164,7 +169,7 @@ export default function Hero() {
                 </select>
               </div>
               <div><span className="mb-2 block text-[11px] font-semibold uppercase">{t("hero.pickup")}</span><DatePicker value={pickup} onChange={setPickup} placeholder={t("hero.pickupPlaceholder")} minDate={todayISO} /></div>
-              <div><span className="mb-2 block text-[11px] font-semibold uppercase">{t("hero.return")}</span><DatePicker value={ret} onChange={setReturn} placeholder={t("hero.returnPlaceholder")} minDate={pickup ? addDaysISO(pickup, 1) : todayISO} disabledMessage={!pickup ? t("hero.pickFirst") : undefined} /></div>
+              <div><span className="mb-2 block text-[11px] font-semibold uppercase">{t("hero.return")}</span><DatePicker value={ret} onChange={setReturn} placeholder={t("hero.returnPlaceholder")} minDate={pickup || todayISO} disabledMessage={!pickup ? t("hero.pickFirst") : undefined} /></div>
               <div className="col-span-2">
                 <label className="mb-2 block text-[11px] font-semibold uppercase">{t("hero.carOptional")}</label>
                 <select aria-label={t("hero.carOptional")} value={selectedCar} onChange={(e) => setSelectedCar(e.target.value)} className="w-full rounded-xl border border-zinc-200 bg-white px-4 py-3 text-[14px] font-medium">
@@ -174,7 +179,7 @@ export default function Hero() {
               </div>
             </div>
             <button type="button" onClick={handleMainCta} className="mt-5 flex w-full items-center justify-center gap-2 rounded-full bg-[#1a1a1a] py-4 text-[15px] font-bold text-white hover:bg-black transition">
-              {hasDates && hasCar ? t("hero.waCta") : t("hero.cta")}
+              {canOpenWa ? t("hero.waCta") : t("hero.cta")}
               {days > 0 ? ` • ${tn("common.days", days)}` : ""} <span className="inline-block ms-1 rtl:rotate-180">→</span>
             </button>
             <p className="mt-2 text-center text-[11px] text-zinc-500">

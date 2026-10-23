@@ -2,7 +2,7 @@ import { siteConfig } from "@/data/config"
 import { DEFAULT_LANG } from "@/data/translations"
 import { tr } from "@/lib/i18n"
 
-export type LandingId = "airport" | "deposit" | "nearby"
+export type LandingId = "airport" | "airportDelivery" | "deposit" | "nearby"
 export type Landing = { id: LandingId; slug: string; title: string; description: string }
 
 const slugify = (v: string) =>
@@ -17,12 +17,21 @@ export function buildLandings(): Landing[] {
 
   const all: Landing[] = []
 
-  if (siteConfig.booking.hasAirport) {
+  const { cityHasAirport, airportService, unlimitedKm } = siteConfig.booking
+
+  if (cityHasAirport) {
     all.push({
       id: "airport",
       slug: `${prefix}-${slugify(t("seo.slugAirport"))}-${citySlug}`,
       title: t("landings.airport.metaTitle"),
-      description: `${t("landings.airport.metaDescription")}${siteConfig.booking.unlimitedKm ? " " + t("landings.airport.metaKm") : ""}`,
+      description: `${t("landings.airport.metaDescription")}${unlimitedKm ? " " + t("landings.airport.metaKm") : ""}`,
+    })
+  } else if (airportService) {
+    all.push({
+      id: "airportDelivery",
+      slug: `${prefix}-${citySlug}-${slugify(t("seo.slugAirportDelivery"))}`,
+      title: t("landings.airportDelivery.metaTitle"),
+      description: `${t("landings.airportDelivery.metaDescription")}${unlimitedKm ? " " + t("landings.airportDelivery.metaKm") : ""}`,
     })
   }
 
@@ -35,10 +44,13 @@ export function buildLandings(): Landing[] {
     })
   }
 
-  if (nearby.length > 0) {
+  // Toujours générer "nearby" s'il y a des zones voisines OU si aucune autre landing n'est active
+  // (évite un tableau vide dans generateStaticParams avec output: "export").
+  if (nearby.length > 0 || all.length === 0) {
+    const targetSlug = slugify(nearby[0] || city)
     all.push({
       id: "nearby",
-      slug: `${prefix}-${slugify(nearby[0])}`,
+      slug: `${prefix}-${targetSlug}`,
       title: t("landings.nearby.metaTitle"),
       description: t("landings.nearby.metaDescription"),
     })

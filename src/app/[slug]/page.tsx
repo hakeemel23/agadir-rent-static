@@ -1,8 +1,9 @@
 import type { Metadata } from "next"
+import Image from "next/image"
 import Link from "next/link"
 import { notFound } from "next/navigation"
 import { landings, type Landing } from "@/data/landings"
-import { SITE_URL, siteConfig, type Car } from "@/data/config"
+import { SITE_URL, siteConfig, type Car, type LocationId } from "@/data/config"
 import { translations } from "@/data/translations"
 import { formatPriceDual } from "@/lib/currency"
 import Shell from "@/components/shell"
@@ -46,6 +47,8 @@ export default async function LandingPage({ params }: Props) {
 
   type LandingKey = keyof typeof translations.fr.landings
   const pointCount = translations.fr.landings[l.id as LandingKey].points.length
+  const landingLocation: LocationId =
+    l.id === "nearby" ? "nearby" : l.id === "deposit" ? "city" : (siteConfig.booking.locations[0] ?? "city")
 
   return (
     <Shell>
@@ -58,13 +61,23 @@ export default async function LandingPage({ params }: Props) {
           ))}
         </ul>
         <h2 className="mt-10 text-[22px] font-black"><T k="landing.carsTitle" /></h2>
-        <div className="mt-4 grid gap-3 sm:grid-cols-2">
+        <div className="mt-4 grid gap-4 sm:grid-cols-2">
           {siteConfig.fleet.cars.map((c: Car) => {
             const dual = formatPriceDual(c.price)
             return (
-              <div key={c.id} className="flex items-center justify-between gap-2 rounded-2xl border bg-white p-4">
-                <span className="text-[14px] font-semibold">{c.name}</span>
-                <div className="text-end">
+              <div key={c.id} className="flex items-center justify-between gap-3 rounded-2xl border border-zinc-200 bg-white p-4">
+                <div className="flex items-center gap-3 min-w-0">
+                  <div className="relative h-14 w-20 shrink-0 rounded-xl bg-[#faf9f6]">
+                    <Image src={c.image} alt={c.name} fill sizes="80px" className="object-contain p-1" />
+                  </div>
+                  <div className="min-w-0">
+                    <span className="block truncate text-[14px] font-bold text-zinc-900">{c.name}</span>
+                    <span className="block text-[11px] text-zinc-500">
+                      <T k={c.auto ? "fleet.auto" : "fleet.manual"} /> • <T k="fleet.seats" vars={{ n: c.seats }} />
+                    </span>
+                  </div>
+                </div>
+                <div className="text-end shrink-0">
                   <span className="block text-[13px] font-bold">{dual.base} <T k="common.perDay" /></span>
                   <span className="block text-[11px] text-zinc-500">{dual.foreign} <T k="common.perDay" /></span>
                 </div>
@@ -75,6 +88,7 @@ export default async function LandingPage({ params }: Props) {
         <div className="mt-8 flex flex-wrap gap-3">
           <WaCta
             source={`landing-${l.slug}`}
+            defaultLocation={landingLocation}
             className="rounded-full bg-[#15803d] px-6 py-3 text-[14px] font-bold text-white transition hover:bg-[#166534]"
           />
           <Link href="/#fleet" className="rounded-full border px-6 py-3 text-[14px] font-bold">
