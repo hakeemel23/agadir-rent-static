@@ -113,10 +113,6 @@ export const siteConfig = {
     acceptForeignCash: true,
     addressCountry: "MA",
   },
-  tracking: {
-    gaId: "",
-    metaPixelId: "",
-  },
   hero: { image: "/hero.webp" },
   fleet: { cars },
   reviews: { googleMapsLink: "", items: [] as Review[] },
