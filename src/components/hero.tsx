@@ -101,13 +101,9 @@ export default function Hero() {
   const { location, setLocation, pickup, setPickup, ret, setReturn, days, currency } = useBooking()
   const { lang, t, tn } = useT()
   const [selectedCar, setSelectedCar] = useState<string>("")
-  const [todayISO, setTodayISO] = useState<string>(() => todayInZone(siteConfig.business.timezone))
   const minPrice = siteConfig.fleet.cars.length > 0 ? Math.min(...siteConfig.fleet.cars.map((c: Car) => c.price)) : 0;
+  const todayISO = todayInZone(siteConfig.business.timezone)
   const locale = LOCALES[lang]
-
-  useEffect(() => {
-    setTodayISO(todayInZone(siteConfig.business.timezone))
-  }, [])
 
   const features = [
     ...(!siteConfig.booking.withCaution ? ["hero.features.noDeposit"] : []),

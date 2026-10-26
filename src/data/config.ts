@@ -112,10 +112,6 @@ export const siteConfig = {
     payments: ["cash", "transfer"] as PaymentMethod[],
     acceptForeignCash: true,
     addressCountry: "MA",
-    legal: {
-      ice: "",
-      rc: "",
-    },
   },
   tracking: {
     gaId: "",

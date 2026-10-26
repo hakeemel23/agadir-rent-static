@@ -235,7 +235,6 @@ const fr = {
     infoTitle: "Infos pratiques",
     contactTitle: "Contact",
     seeMap: "Voir sur Maps",
-    legalNotice: "Aucun paiement en ligne ni carte bancaire requise sur ce site. Vos données de réservation sont transmises uniquement via WhatsApp (Loi 09-08).",
     rights: CITY_HAS_AIRPORT
       ? `© {year} {brand} - Tous droits réservés - Location voiture ${CITY} Aéroport`
       : `© {year} {brand} - Tous droits réservés - Location voiture ${CITY}`,
@@ -474,7 +473,6 @@ const en: Dict = {
     infoTitle: "Useful info",
     contactTitle: "Contact",
     seeMap: "View on Maps",
-    legalNotice: "No online payment or credit card required on this website. Your booking details are shared exclusively via WhatsApp (Law 09-08).",
     rights: CITY_HAS_AIRPORT ? `© {year} {brand} - All rights reserved - Car rental ${CITY} Airport` : `© {year} {brand} - All rights reserved - Car rental ${CITY}`,
   },
   bar: { title: "Need a car?", text: "Quick reply on WhatsApp" },
@@ -709,7 +707,6 @@ const ar: Dict = {
     infoTitle: "معلومات مفيدة",
     contactTitle: "التواصل",
     seeMap: "عرض على Maps",
-    legalNotice: "لا يُطلب أي أداء إلكتروني أو بطاقة بنكية عبر الموقع. تُرسل معلومات الحجز حصريًا عبر واتساب لتأكيد طلبكم (القانون 09-08).",
     rights: CITY_HAS_AIRPORT
       ? `© {year} {brand} - جميع الحقوق محفوظة - كراء السيارات في مطار ${CITY_AR}`
       : `© {year} {brand} - جميع الحقوق محفوظة - كراء السيارات في ${CITY_AR}`,

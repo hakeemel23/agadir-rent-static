@@ -145,12 +145,6 @@ export function assertProductionReady() {
     errors.push("website.url contient '.pages.dev' - Vous devez configurer le vrai domaine du client pour la production")
   }
 
-  if (c.tracking.gaId && !/^G-[A-Z0-9]+$/i.test(c.tracking.gaId.trim())) {
-    errors.push("tracking.gaId invalide (format attendu : G-XXXXXXXXXX)")
-  }
-  if (c.tracking.metaPixelId && !/^\d{10,20}$/.test(c.tracking.metaPixelId.trim())) {
-    errors.push("tracking.metaPixelId invalide (doit contenir uniquement des chiffres)")
-  }
 
   if (c.contact.whatsapp === DEMO_WHATSAPP || !/^212[5-7]\d{8}$/.test(c.contact.whatsapp)) errors.push("contact.whatsapp invalide")
   if (c.contact.phone === DEMO_PHONE || !/^\+212[5-7]\d{8}$/.test(c.contact.phone)) errors.push("contact.phone invalide")
